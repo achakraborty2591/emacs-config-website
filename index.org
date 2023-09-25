@@ -1,0 +1,5 @@
+#+TITLE: Redirecting to emacs_config.html
+
+If you are not redirected automatically, follow this [[https://achakraborty2591.github.io/emacs-config-website/emacs_config.html][link to emacs_config.html]].
+
+#+HTML_HEAD_EXTRA: <meta http-equiv="refresh" content="0; url=https://achakraborty2591.github.io/emacs-config-website/emacs_config.html">

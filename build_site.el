@@ -62,17 +62,6 @@
 
 (copy-file "index.org" "skeleton_files/index.org" t)
 
-;; Download readtheorg.css
-(my/download-and-save-file
-"https://raw.githubusercontent.com/fniessen/org-html-themes/master/styles/readtheorg/css/htmlize.css"
-"css"
-"htmlize.css")
-
-(my/download-and-save-file
-"https://raw.githubusercontent.com/fniessen/org-html-themes/master/styles/readtheorg/css/readtheorg.css"
-"css"
-"readtheorg.css")
-
 ;; Load the publishing system
 (require 'ox-publish)
 

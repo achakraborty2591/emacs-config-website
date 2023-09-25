@@ -54,12 +54,24 @@
     ;; Download and save the file.
     (url-copy-file url file-path t)))
 
+;; Download and save the latest emacs_config.org file from - https://github.com/achakraborty2591/ACH-Emacs-Config repo.
 (my/download-and-save-file
 "https://raw.githubusercontent.com/achakraborty2591/ACH-Emacs-Config/master/emacs_config.org"
 "skeleton_files"
 "emacs_config.org")
 
 (copy-file "index.org" "skeleton_files/index.org" t)
+
+;; Download readtheorg.css
+(my/download-and-save-file
+"https://raw.githubusercontent.com/fniessen/org-html-themes/master/styles/readtheorg/css/htmlize.css"
+"css"
+"htmlize.css")
+
+(my/download-and-save-file
+"https://raw.githubusercontent.com/fniessen/org-html-themes/master/styles/readtheorg/css/readtheorg.css"
+"css"
+"readtheorg.css")
 
 ;; Load the publishing system
 (require 'ox-publish)
@@ -83,7 +95,7 @@
 (setq org-html-validation-link nil            ;; Don't show validation link
       org-html-head-include-scripts nil       ;; Use our own scripts
       org-html-head-include-default-style nil ;; Use our own styles
-      org-html-head "<link rel=\"stylesheet\" href=\"https://gongzhitaao.org/orgcss/org.css\" />")
+      org-html-head "<link rel=\"stylesheet\" href=\"./css/readtheorg.css\" />")
 
 ;; Generate the site output
 (org-publish-all t)

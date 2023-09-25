@@ -1,12 +1,14 @@
 name: Publish to GitHub Pages
-"on":
+on:
   push:
     branches:
       - main
 jobs:
   publish:
     runs-on: ubuntu-latest
-    permissions: read-all|write-all
+    permissions:
+      contents: write
+      actions: write
     steps:
       - name: Check out
         uses: actions/checkout@v3

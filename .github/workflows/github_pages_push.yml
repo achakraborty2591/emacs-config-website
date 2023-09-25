@@ -6,6 +6,7 @@ name: Publish to GitHub Pages
 jobs:
   publish:
     runs-on: ubuntu-latest
+    permissions: read-all|write-all
     steps:
       - name: Check out
         uses: actions/checkout@v3
@@ -16,6 +17,5 @@ jobs:
       - name: Publish generated content to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@4.1.4
         with:
-          token: ${{ secrets.GH_TOKEN }}
           branch: gh-pages
           folder: published_contents

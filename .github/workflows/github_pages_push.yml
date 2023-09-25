@@ -4,9 +4,6 @@ name: Publish to GitHub Pages
     branches:
       - main
 jobs:
-  permissions:
-    pages: write
-    id-token: write
   publish:
     runs-on: ubuntu-latest
     steps:

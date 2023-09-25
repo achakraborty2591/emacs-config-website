@@ -1,0 +1,33 @@
+#+TITLE: GNU Emacs Configuration
+#+AUTHOR: Anirban Chakraborty
+
+* Introduction
+
+This repository contains my personal Emacs configuration which is written in Org mode and published as an HTML website on GitHub. The purpose of this project is to share my setup with the community and help others who are looking for inspiration or guidance in configuring their own Emacs environment.
+
+* Installation
+
+** Clone the ACH-Emacs-Config repo
+#+BEGIN_SRC zsh
+  git clone https://github.com/achakraborty2591/ACH-Emacs-Config ~/.emacs.d/
+#+END_SRC
+   
+** Install Emacs on macOS
+- /Step 1:/ Tap into the emacs-plus repository:
+   #+BEGIN_SRC zsh
+   brew tap d12frosted/emacs-plus
+   #+END_SRC
+
+- /Step 2:/ Install emacs-plus with elrumo2-icon:
+   #+BEGIN_SRC zsh
+   brew install emacs-plus --with-elrumo2-icon
+   #+END_SRC
+
+- /Step 3:/ Create a symbolic link to the Emacs application:
+   #+BEGIN_SRC zsh
+   ln -s /opt/homebrew/opt/emacs-plus@29/Emacs.app /Applications
+   #+END_SRC
+
+After completing these steps, your Emacs installation will be configured and ready to use!
+
+Remember: Emacs is more than just a text editor; it's a way of life.

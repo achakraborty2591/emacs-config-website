@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out
-        uses: actions/checkout@v1
+        uses: actions/checkout@v3
       - name: Install Emacs
         run: sudo apt install emacs-nox --yes
       - name: Build the site
@@ -16,5 +16,6 @@ jobs:
       - name: Publish generated content to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@4.1.4
         with:
+          token: ${{ secrets.GH_TOKEN }}
           branch: gh-pages
           folder: published_contents

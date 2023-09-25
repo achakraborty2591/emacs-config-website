@@ -59,6 +59,8 @@
 "skeleton_files"
 "emacs_config.org")
 
+(copy-file "index.html" "skeleton_files/index.html" t)
+
 ;; Load the publishing system
 (require 'ox-publish)
 

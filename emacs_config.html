@@ -5,124 +5,120 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>GNU Emacs Config</title>
+<title>GNU EMACS CONFIGURATION</title>
 <meta name="generator" content="Org mode" />
-<meta name="author" content="Anirban Chakraborty (ACH)" />
+<meta name="author" content="Anirban Chakraborty" />
 <meta name="description" content="ACH's personal Emacs config."
  />
-
-<link rel="stylesheet" type="text/css" href="https://fniessen.github.io/org-html-themes/src/readtheorg_theme/css/htmlize.css"/>
-<link rel="stylesheet" type="text/css" href="https://fniessen.github.io/org-html-themes/src/readtheorg_theme/css/readtheorg.css"/>
-
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="https://fniessen.github.io/org-html-themes/src/lib/js/jquery.stickytableheaders.min.js"></script>
-<script type="text/javascript" src="https://fniessen.github.io/org-html-themes/src/readtheorg_theme/js/readtheorg.js"></script>
+<link rel="stylesheet" href="../skeleton_files/style.css" />
+                     <link rel="stylesheet" href="../skeleton_files/highlight/styles/atom-one-dark.min.css" />
+                     <script src="../skeleton_files/highlight/highlight.min.js"></script>
+                     <script>hljs.highlightAll();</script>
 </head>
 <body>
 <div id="content">
-<h1 class="title">GNU Emacs Config</h1>
+<h1 class="title">GNU EMACS CONFIGURATION</h1>
 <div id="table-of-contents">
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#org7d7ee16">INTRODUCTION</a></li>
-<li><a href="#org3bb72b0">CONFIG FILE STARTS HERE</a>
+<li><a href="#orgf5ad9e2">Introduction</a></li>
+<li><a href="#org9ea8268">Start of the Configuration File</a>
 <ul>
-<li><a href="#org7222684">emacs<sub>config.el</sub> file top contents</a></li>
+<li><a href="#org1e8a087">Top contents</a></li>
 </ul>
 </li>
-<li><a href="#org21b803d">GARBAGE COLLECTION</a></li>
-<li><a href="#org5b7b8e9">PERSONAL INFORMATION</a></li>
-<li><a href="#org67f4272">PACKAGE MANAGER SETUP</a>
+<li><a href="#orgc0b1d72">Garbage Collection</a></li>
+<li><a href="#orgde8cb9f">Personal Information</a></li>
+<li><a href="#orgc2adead">Package Manager</a>
 <ul>
-<li><a href="#org275dfd0">Elpaca Package Manager</a></li>
-<li><a href="#org48c5a2e">Automatic Package Update</a></li>
+<li><a href="#org392789c">Elpaca Package Manager</a></li>
+<li><a href="#orge39f2c3">Automatic Package Update</a></li>
 </ul>
 </li>
-<li><a href="#org42feadb">STARTUP SETTINGS</a></li>
-<li><a href="#org3e29178">AUTO-SAVE SETTINGS</a></li>
-<li><a href="#org5653184">UI &amp; APPEARANCE</a>
+<li><a href="#org792a09a">Startup</a></li>
+<li><a href="#org06a9478">Auto-Save</a></li>
+<li><a href="#orgf16158a">Appearance</a>
 <ul>
-<li><a href="#org0677ed1">OS X Specific Settings</a></li>
-<li><a href="#org128fa25">Color Theme Settings</a></li>
-<li><a href="#orgf2779bd">Diminish Settings</a></li>
-<li><a href="#orgc233d7f">Fancy Compilation Settings</a></li>
-<li><a href="#org48aa420">Counsel Settings</a></li>
-<li><a href="#org6934637">Dired Settings</a></li>
-<li><a href="#org4716142">Help Settings</a></li>
-<li><a href="#orgd5afd0c">Neotree Settings</a></li>
-<li><a href="#org852bf0e">Icon Settings</a></li>
-<li><a href="#org53e6519">Dashboard Settings</a></li>
-<li><a href="#orgc77df72">Which Key Settings</a></li>
+<li><a href="#orgc67fc3f">OS X Specific Settings</a></li>
+<li><a href="#org6f241ee">Color Theme Settings</a></li>
+<li><a href="#org404698e">Diminish Settings</a></li>
+<li><a href="#orga38ae2c">Fancy Compilation Settings</a></li>
+<li><a href="#org4ee7363">Counsel Settings</a></li>
+<li><a href="#org507a0fb">Dired Settings</a></li>
+<li><a href="#org97c6950">Help Settings</a></li>
+<li><a href="#org72b538f">Neotree Settings</a></li>
+<li><a href="#orgcd20806">Icon Settings</a></li>
+<li><a href="#orgcee6a1c">Dashboard Settings</a></li>
+<li><a href="#orgfabd48b">Which Key Settings</a></li>
 </ul>
 </li>
-<li><a href="#org729dacf">KEYBINDING SETTINGS</a>
+<li><a href="#org6fa42a5">Keybindings</a>
 <ul>
-<li><a href="#org9ceed1b">Evil Mode Settings</a></li>
-<li><a href="#org11cfff7">General Keybinding Settings</a></li>
+<li><a href="#org0c90ca6">Evil Mode Settings</a></li>
+<li><a href="#orgf45e82b">General Keybinding Settings</a></li>
 </ul>
 </li>
-<li><a href="#orgedd7a1f">TERMINAL FRAMEWORKS</a>
+<li><a href="#org08f9ecb">Terminal Frameworks</a>
 <ul>
-<li><a href="#org882da49">Vterm Settings</a></li>
-<li><a href="#orga36aa04">Eshell Settings</a></li>
+<li><a href="#orga82461d">Vterm Settings</a></li>
+<li><a href="#orgda328c7">Eshell Settings</a></li>
 </ul>
 </li>
-<li><a href="#org8e66cfc">COMPLETION FRAMEWORKS</a>
+<li><a href="#org8998480">Completion Frameworks</a>
 <ul>
-<li><a href="#org83b2d57">Vertico Mode Settings</a></li>
-<li><a href="#org98daa04">Consult Mode Settings</a></li>
+<li><a href="#orgdf976a5">Vertico Mode Settings</a></li>
+<li><a href="#org90551f3">Consult Mode Settings</a></li>
 </ul>
 </li>
-<li><a href="#org6d0f78a">PROGRAMMING FRAMEWORKS</a>
+<li><a href="#org36d606d">Programming Settings</a>
 <ul>
-<li><a href="#org17c8682">Flycheck Settings</a></li>
-<li><a href="#orgf8ac051">Highlight TODO Settings</a></li>
-<li><a href="#org3be50cb">LSP Settings</a></li>
-<li><a href="#orgcd6b1ba">Git Settings</a></li>
-<li><a href="#org5d49aaf">YASnippet Settings</a></li>
-<li><a href="#org9354528">Markdown Settings</a></li>
-<li><a href="#org8080c05">JSON Settings</a></li>
-<li><a href="#org761d56a">LaTeX Settings</a></li>
-<li><a href="#orgb775fbe">Python Settings</a></li>
-<li><a href="#org5eed012">Typescript Settings</a></li>
-<li><a href="#org48ede87">Verilog-Mode Settings</a></li>
-<li><a href="#org5b5cce5">Emacs Lisp Settings</a></li>
-<li><a href="#org235a6db">YAML Settings</a></li>
-<li><a href="#org54657c7">Scala Settings</a></li>
-<li><a href="#org804e2a6">ORG Settings</a></li>
+<li><a href="#orgb7a63cf">Flycheck Settings</a></li>
+<li><a href="#org6e29363">Highlight TODO Settings</a></li>
+<li><a href="#org3f9d9c9">LSP Settings</a></li>
+<li><a href="#org08f8741">Git Settings</a></li>
+<li><a href="#org775df7c">YASnippet Settings</a></li>
+<li><a href="#orga7d756f">Markdown Settings</a></li>
+<li><a href="#orgf41dd19">JSON Settings</a></li>
+<li><a href="#org99b94c5">LaTeX Settings</a></li>
+<li><a href="#org07de4b8">Python Settings</a></li>
+<li><a href="#org893388b">Typescript Settings</a></li>
+<li><a href="#org8be6c0e">Verilog-Mode Settings</a></li>
+<li><a href="#orgeceea6c">Emacs Lisp Settings</a></li>
+<li><a href="#orge756695">YAML Settings</a></li>
+<li><a href="#orge96d261">Scala Settings</a></li>
+<li><a href="#orgbbd9319">ORG Settings</a></li>
 </ul>
 </li>
-<li><a href="#org7de9764">MISCELLANEOUS PACKAGES</a></li>
-<li><a href="#org7c0e7ef">LIST OF ALL KEYBINDINGS</a></li>
-<li><a href="#org99dcaad">CONFIG FILE ENDS HERE</a>
+<li><a href="#org6600191">Miscellaneous Packages</a></li>
+<li><a href="#org308060f">List of all Keybindings</a></li>
+<li><a href="#orgd951b2e">End of the Configuration File</a>
 <ul>
-<li><a href="#orge979e11">emacs<sub>config.el</sub> file top contents</a></li>
+<li><a href="#orgdda06b4">Bottom Contents</a></li>
 </ul>
 </li>
 </ul>
 </div>
 </div>
 
-<div id="outline-container-org7d7ee16" class="outline-2">
-<h2 id="org7d7ee16">INTRODUCTION</h2>
-<div class="outline-text-2" id="text-org7d7ee16">
+<div id="outline-container-orgf5ad9e2" class="outline-2">
+<h2 id="orgf5ad9e2">Introduction</h2>
+<div class="outline-text-2" id="text-orgf5ad9e2">
 <p>
 This org file is basically a manual of my entire emacs configuration. This file is updatable.
 </p>
 </div>
 </div>
 
-<div id="outline-container-org3bb72b0" class="outline-2">
-<h2 id="org3bb72b0">CONFIG FILE STARTS HERE</h2>
-<div class="outline-text-2" id="text-org3bb72b0">
+<div id="outline-container-org9ea8268" class="outline-2">
+<h2 id="org9ea8268">Start of the Configuration File</h2>
+<div class="outline-text-2" id="text-org9ea8268">
 </div>
-<div id="outline-container-org7222684" class="outline-3">
-<h3 id="org7222684">emacs<sub>config.el</sub> file top contents</h3>
-<div class="outline-text-3" id="text-org7222684">
+<div id="outline-container-org1e8a087" class="outline-3">
+<h3 id="org1e8a087">Top contents</h3>
+<div class="outline-text-3" id="text-org1e8a087">
 <p>
-This block of code serves as the <b><b>header</b></b> and introductory <b><b>commentary</b></b> for the Emacs configuration file. It declares that this is an <b><b>Emacs Lisp source code block</b></b> and provides a brief description of the file as a <b><b>GNU Emacs Configuration</b></b>. A <b><b>disclaimer</b></b> clarifies that this file is not part of GNU Emacs. <b><b>Licensing details</b></b> under the GNU General Public License are provided, including a <b><b>warranty disclaimer</b></b>. Finally, a short commentary indicates that this file contains a complete <b><b>configuration for GNU Emacs</b></b>. The actual <b><b>configuration code</b></b> would follow after this introduction.
+This is the header and introductory comments for a GNU Emacs configuration file. The author/maintainer of this file is Anirban Chakraborty, whose email address and GitHub page are provided. This file is not part of the official GNU Emacs software but is distributed under the terms of the GNU General Public License version 3 or any later version. It comes without any warranty. The commentary section indicates that this file provides a complete configuration for GNU Emacs.
 </p>
 
 <div class="org-src-container">
@@ -161,11 +157,11 @@ This block of code serves as the <b><b>header</b></b> and introductory <b><b>com
 </div>
 </div>
 
-<div id="outline-container-org21b803d" class="outline-2">
-<h2 id="org21b803d">GARBAGE COLLECTION</h2>
-<div class="outline-text-2" id="text-org21b803d">
+<div id="outline-container-orgc0b1d72" class="outline-2">
+<h2 id="orgc0b1d72">Garbage Collection</h2>
+<div class="outline-text-2" id="text-orgc0b1d72">
 <p>
-This block of code sets two Emacs variables associated with memory usage and recursion depth. The <b>gc-cons-threshold</b> variable determines the amount of memory that Emacs can utilize before triggering garbage collection. In this case, it's being set to 100000000 bytes (about 95 megabytes), meaning that Emacs will use more memory but will also spend less time performing garbage collection, potentially making it feel faster and more responsive. The <b>max-specpdl-size</b> variable establishes the maximum number of Lisp variable bindings &amp; unwind-protects before Emacs signals an error, aiding in preventing infinite recursions. Here it's being increased from its default of 1300 to 5000.
+This Emacs Lisp code sets two configuration parameters. The first line sets the garbage collection threshold to 100,000,000 bytes, which means that automatic memory management will only start when this amount of memory has been allocated since the last garbage collection. This can help improve performance by reducing the frequency of garbage collections. The second line sets the maximum depth of the variable binding stack (also known as specpdl) to 5000. This limits how deeply functions and macros can nest in their use of local variables, helping prevent infinite recursion or excessively deep nesting from consuming all available memory.
 </p>
 
 <div class="org-src-container">
@@ -181,11 +177,11 @@ This block of code sets two Emacs variables associated with memory usage and rec
 </div>
 </div>
 
-<div id="outline-container-org5b7b8e9" class="outline-2">
-<h2 id="org5b7b8e9">PERSONAL INFORMATION</h2>
-<div class="outline-text-2" id="text-org5b7b8e9">
+<div id="outline-container-orgde8cb9f" class="outline-2">
+<h2 id="orgde8cb9f">Personal Information</h2>
+<div class="outline-text-2" id="text-orgde8cb9f">
 <p>
-This code block is crucial as it establishes the user's identity within Emacs by setting the full name and email address. This information can be used in various contexts, such as when authoring commits in version control systems or filling out forms automatically. The <b>setq</b> function in this block of code is used to assign values to two variables: <b>user-full-name</b> and <b>user-mail-address</b>. It sets the user's full name as "Anirban Chakraborty" and the email address as "achakraborty2591@gmail.com".
+The provided block of code is used to set user-specific information in Emacs. It sets the <b>user-full-name</b> as "Anirban Chakraborty" and the <b>user-mail-address</b> as "achakraborty2591@gmail.com". This information can be utilized by various Emacs packages that require user details.
 </p>
 
 <div class="org-src-container">
@@ -196,15 +192,15 @@ This code block is crucial as it establishes the user's identity within Emacs by
 </div>
 </div>
 
-<div id="outline-container-org67f4272" class="outline-2">
-<h2 id="org67f4272">PACKAGE MANAGER SETUP</h2>
-<div class="outline-text-2" id="text-org67f4272">
+<div id="outline-container-orgc2adead" class="outline-2">
+<h2 id="orgc2adead">Package Manager</h2>
+<div class="outline-text-2" id="text-orgc2adead">
 </div>
-<div id="outline-container-org275dfd0" class="outline-3">
-<h3 id="org275dfd0">Elpaca Package Manager</h3>
-<div class="outline-text-3" id="text-org275dfd0">
+<div id="outline-container-org392789c" class="outline-3">
+<h3 id="org392789c">Elpaca Package Manager</h3>
+<div class="outline-text-3" id="text-org392789c">
 <p>
-This block of code focuses on setting up and configuring <a href="https://github.com/progfolio/elpaca">Elpaca</a>, a package manager for Emacs. It declares several variables using the <b>defvar</b> function, which relate to the Elpaca installation, including its version, directory paths, and order. A <b>let</b> form sets up local bindings for these variables and carries out various operations like adding directories to the load path, cloning the Elpaca repository from GitHub if not present locally, checking out the specified git reference, byte-recompiling the directory, requiring the 'elpaca' module, and generating autoloads. An <b>after-init-hook</b> is added to process Elpaca queues after initialization, and the <b>elpaca</b> function is called with the previously defined order. The block also installs and configures Elpaca's use-package support, sets the <b>elpaca-use-package-by-default</b> variable to true, and calls the <b>elpaca-wait</b> function to block until the current queue has been processed. Lastly, it provides examples of how to use Elpaca with the <b>use-package</b> macro to install and configure packages, how to turn off <b>elpaca-use-package-mode</b>, and how to defer execution of body forms.
+This Emacs Lisp code is configuring and using the elpaca package, a tool for managing Emacs packages. Firstly, it sets up several variables related to elpaca, including its version, directories for builds and repositories, and order of operations. Then, it checks if the elpaca repository exists in the specified directory. If not, it creates the directory and clones the elpaca repository from GitHub. It also compiles the cloned files and generates autoloads for them. After that, it adds a hook to process queues after initialization and installs support for the use-package macro with elpaca. The script then waits until the current queue has been processed before proceeding. This can be useful when installing a package which modifies a form used at the top-level. Finally, there are examples of how to use elpaca with use-package, including turning off elpaca-use-package-mode for immediate interpretation of declarations (useful for built-in Emacs features), and deferring execution of body commands.
 </p>
 
 <div class="org-src-container">
@@ -286,11 +282,11 @@ This block of code focuses on setting up and configuring <a href="https://github
 </div>
 </div>
 
-<div id="outline-container-org48c5a2e" class="outline-3">
-<h3 id="org48c5a2e">Automatic Package Update</h3>
-<div class="outline-text-3" id="text-org48c5a2e">
+<div id="outline-container-orge39f2c3" class="outline-3">
+<h3 id="orge39f2c3">Automatic Package Update</h3>
+<div class="outline-text-3" id="text-orge39f2c3">
 <p>
-This block of code configures the <b>auto-package-update</b> package using the <b>use-package</b> macro. The <b>:ensure t</b> keyword ensures that the package is automatically installed if not already present. The <b>:custom</b> keyword customizes several variables related to the package update process, such as deleting old versions, hiding results, and prompting before updating. Lastly, the <b>:config</b> keyword precedes a call to the <b>auto-package-update-maybe</b> function, which checks for updates and installs them if they are available.
+The Emacs Lisp code is set up to configure the auto-package-update package via the use-package macro. The directive :ensure t guarantees that the auto-package-update package will be installed if it isn't already. In the :custom section, three behaviors are established: old versions of packages will be deleted post-update, update results buffer won't be displayed after updates, and users will receive a prompt before updates are executed. Lastly, in the :config section, the function auto-package-update-maybe is invoked which checks for package updates at startup but seeks user confirmation before proceeding with them.
 </p>
 
 <div class="org-src-container">
@@ -310,11 +306,11 @@ This block of code configures the <b>auto-package-update</b> package using the <
 </div>
 </div>
 
-<div id="outline-container-org42feadb" class="outline-2">
-<h2 id="org42feadb">STARTUP SETTINGS</h2>
-<div class="outline-text-2" id="text-org42feadb">
+<div id="outline-container-org792a09a" class="outline-2">
+<h2 id="org792a09a">Startup</h2>
+<div class="outline-text-2" id="text-org792a09a">
 <p>
-This block of code customizes various global settings in Emacs to enhance the user experience. It configures <b>startup behavior</b>, <b>file handling</b>, <b>tab width</b>, <b>indentation</b>, <b>coding system</b>, <b>org mode links</b>, <b>backup files</b>, <b>mouse wheel usage</b>, <b>search sensitivity</b>, <b>error reporting</b>, and more. Certain features such as <b>automatic saving</b>, <b>lockfile creation</b>, and <b>toolbar display</b> are disabled. The block also adjusts how text is displayed and edited in Emacs, encompassing <b>bracket matching</b>, <b>selection replacement</b>, <b>line numbering</b>, <b>syntax highlighting</b>, and <b>subword navigation</b>. Additionally, it establishes <b>keybindings</b> for actions like quitting, increasing/decreasing text scale, and scrolling.
+The Emacs Lisp code configures various settings for Emacs to improve usability and efficiency. It inhibits the startup message, makes the initial scratch buffer empty, requires a final newline in files, disables automatic backups, auto-save, and lockfile creation while placing backup files in a temporary directory. The UI/UX is configured with elements like visible bell, tab width, scroll behavior, double-space after periods, tooltips, toolbar, scrollbar, fringe mode, menu bar, etc. UTF-8 is set as the preferred coding system. Show-paren-mode and electric-pair-mode are enabled, but electric-indent-mode is disabled. Selected text can be replaced when typing or pasting. Line-number-mode and column-number-mode are activated. Current line highlighting is applied in programming or text modes. Other global settings include URL highlighting/linkifying, automatic file change detection, line number display, truncated lines, subword navigation, and syntax highlighting. Keybindings are also set for quitting, increasing/decreasing text scale with both keyboard and mouse wheel.
 </p>
 
 <div class="org-src-container">
@@ -397,11 +393,11 @@ This block of code customizes various global settings in Emacs to enhance the us
 </div>
 </div>
 
-<div id="outline-container-org3e29178" class="outline-2">
-<h2 id="org3e29178">AUTO-SAVE SETTINGS</h2>
-<div class="outline-text-2" id="text-org3e29178">
+<div id="outline-container-org06a9478" class="outline-2">
+<h2 id="org06a9478">Auto-Save</h2>
+<div class="outline-text-2" id="text-org06a9478">
 <p>
-This block of code sets up Emacs' <b>auto-save</b> feature. It designates the temporary file directory as the location for all auto-saved files by setting the <b>auto-save-file-name-transforms</b> and <b>auto-save-list-file-prefix</b> variables. The frequency of auto-saving is controlled via the <b>auto-save-interval</b> and <b>auto-save-timeout</b> variables. A custom function named <b>save-buffer-if-visiting-file</b> is created which saves the current buffer only if it's linked to a file and has undergone modifications. This function is subsequently added to the <b>auto-save-hook</b>, ensuring its execution whenever Emacs initiates an auto-save.
+The Emacs Lisp code configures the auto-save feature in Emacs to enhance file safety and data integrity. It sets the location of auto-save files to the system's temporary directory by transforming all auto-save file names and setting the prefix for auto-save list files. The auto-saving interval is set to every 1000 characters typed, while the timeout for auto-saving is set to every 120 seconds of idle time. Furthermore, a function named save-buffer-if-visiting-file is defined that saves the current buffer only if it is visiting a file and has been modified. This function is added to the auto-save-hook, enabling it to run whenever an auto-save is triggered by Emacs.
 </p>
 
 <div class="org-src-container">
@@ -427,15 +423,15 @@ This block of code sets up Emacs' <b>auto-save</b> feature. It designates the te
 </div>
 </div>
 
-<div id="outline-container-org5653184" class="outline-2">
-<h2 id="org5653184">UI &amp; APPEARANCE</h2>
-<div class="outline-text-2" id="text-org5653184">
+<div id="outline-container-orgf16158a" class="outline-2">
+<h2 id="orgf16158a">Appearance</h2>
+<div class="outline-text-2" id="text-orgf16158a">
 </div>
-<div id="outline-container-org0677ed1" class="outline-3">
-<h3 id="org0677ed1">OS X Specific Settings</h3>
-<div class="outline-text-3" id="text-org0677ed1">
+<div id="outline-container-orgc67fc3f" class="outline-3">
+<h3 id="orgc67fc3f">OS X Specific Settings</h3>
+<div class="outline-text-3" id="text-orgc67fc3f">
 <p>
-This block of code configures the <b>exec-path-from-shell</b> package and sets up certain macOS-specific settings. The <b>use-package</b> macro ensures installation of the exec-path-from-shell package and customizes it to include '-l' in its shell arguments, enabling Emacs to utilize the same PATH as your shell. If the system type is 'darwin' (indicating macOS) and Emacs operates in window mode, various display settings are adjusted. These encompass maximizing the frame by default, designating the font as "Fira Code-16", modifying line spacing, and rendering comments and keywords in italic.
+The Emacs Lisp code configures the exec-path-from-shell package, which is used to import environment variables like $PATH from the shell. It ensures that this package is installed and passes the -l argument to the shell. Additionally, it sets up macOS-specific settings: when Emacs runs in a window system instead of a terminal, it sets the initial frame dimensions to 160 units wide and 50 units tall. Optional configurations for starting fullscreen and setting the default font size are also provided. Line spacing is set at 0.12, and comments and keywords can be displayed in italic, although this feature is optional as it may not look good with certain fonts.
 </p>
 
 <div class="org-src-container">
@@ -456,7 +452,7 @@ This block of code configures the <b>exec-path-from-shell</b> package and sets u
     <span style="font-weight: bold; font-style: italic;">;;</span><span style="font-weight: bold; font-style: italic;">(add-to-list 'default-frame-alist '(fullscreen . maximized))</span>
 
     <span style="font-weight: bold; font-style: italic;">;; </span><span style="font-weight: bold; font-style: italic;">Set default font size (optional)</span>
-    <span style="font-weight: bold; font-style: italic;">;;</span><span style="font-weight: bold; font-style: italic;">(set-face-attribute 'default nil :font "Fira Code-16")</span>
+    (set-face-attribute 'default nil <span style="font-weight: bold;">:font</span> <span style="font-style: italic;">"Fira Code-16"</span>)
     (set-face-attribute 'default nil <span style="font-weight: bold;">:height</span> 160)
 
     <span style="font-weight: bold; font-style: italic;">;; </span><span style="font-weight: bold; font-style: italic;">Set line spacing</span>
@@ -472,11 +468,11 @@ This block of code configures the <b>exec-path-from-shell</b> package and sets u
 </div>
 </div>
 
-<div id="outline-container-org128fa25" class="outline-3">
-<h3 id="org128fa25">Color Theme Settings</h3>
-<div class="outline-text-3" id="text-org128fa25">
+<div id="outline-container-org6f241ee" class="outline-3">
+<h3 id="org6f241ee">Color Theme Settings</h3>
+<div class="outline-text-3" id="text-org6f241ee">
 <p>
-This block of code configures multiple packages associated with Emacs' appearance and syntax highlighting. It installs the <b>doom-themes</b> package that offers a range of appealing themes for Emacs, and adjusts several settings to enable bold and italic text, brighter comments in specific themes, and various theme-related configurations. The <b>auto-dark</b> package is also installed to switch between light and dark themes based on the time of day, with 'doom-one' and 'doom-one-light' selected as the respective dark and light themes. The <b>doom-modeline</b> package customizes the mode line at the bottom of each Emacs window, adjusting its height, bar width, indentation info, word count, buffer file name style, and more. The <b>rainbow-delimiters</b> and <b>rainbow-mode</b> packages are installed to color-code parentheses and other delimiters in programming modes for easier visual matching. Lastly, the <b>highlight-indent-guides</b> package is installed to display vertical lines indicating indentation levels in programming modes.
+The Emacs Lisp code configures several packages related to themes, modeline, and syntax highlighting. The 'doom-themes' package provides a set of attractive color themes with configurations for bold and italic styles, visual bell, neotree, org, and an option to load the 'doom-one' theme. The 'auto-dark' package automatically switches between light and dark themes based on time of day, setting 'doom-bluloco-dark' as the dark theme and 'doom-bluloco-light' as the light theme while enabling auto-dark-mode. The 'doom-modeline' package customizes the modeline (status bar at the bottom of an Emacs window) by configuring its height, width, indentation info, word count, buffer file name style, state icon, modification icon, perspective name, perspective icon, modal icon, and time icon. The 'rainbow-delimiters' package makes matching parentheses stand out with differing colors depending on their depth and is activated in programming modes. Similarly, the 'rainbow-mode' package colorizes color names in buffers and activates in programming modes. Lastly, the 'highlight-indent-guides' package visually indicates indent levels with guide lines, activating in programming modes and using the 'character' method for displaying guides.
 </p>
 
 <div class="org-src-container">
@@ -545,11 +541,11 @@ This block of code configures multiple packages associated with Emacs' appearanc
 </div>
 </div>
 
-<div id="outline-container-orgf2779bd" class="outline-3">
-<h3 id="orgf2779bd">Diminish Settings</h3>
-<div class="outline-text-3" id="text-orgf2779bd">
+<div id="outline-container-org404698e" class="outline-3">
+<h3 id="org404698e">Diminish Settings</h3>
+<div class="outline-text-3" id="text-org404698e">
 <p>
-This block of code installs the <b>diminish</b> package via the <b>use-package</b> macro. The diminish package enables shortening or complete hiding of the display of minor modes in the mode-line, thereby reducing clutter.
+This Emacs Lisp code configures the diminish package in Emacs. The diminish package is used to reduce or eliminate minor modes on the mode line, making it less cluttered. The :ensure t directive ensures that the package is installed if it's not already present.
 </p>
 
 <div class="org-src-container">
@@ -563,11 +559,11 @@ This block of code installs the <b>diminish</b> package via the <b>use-package</
 </div>
 </div>
 
-<div id="outline-container-orgc233d7f" class="outline-3">
-<h3 id="orgc233d7f">Fancy Compilation Settings</h3>
-<div class="outline-text-3" id="text-orgc233d7f">
+<div id="outline-container-orga38ae2c" class="outline-3">
+<h3 id="orga38ae2c">Fancy Compilation Settings</h3>
+<div class="outline-text-3" id="text-orga38ae2c">
 <p>
-This block of code installs and configures the <b>fancy-compilation</b> package via the <b>use-package</b> macro. The fancy-compilation package offers a more visually attractive compilation buffer in Emacs. The <b>:config</b> keyword precedes a call to the <b>fancy-compilation-mode</b> function, enabling this mode.
+This Emacs Lisp code configures the fancy-compilation package in Emacs. The fancy-compilation package is used to enhance the compilation buffer, providing a more visually appealing and informative display of compilation results. The :ensure t directive ensures that the package is installed if it's not already present, and fancy-compilation-mode is enabled in the :config section.
 </p>
 
 <div class="org-src-container">
@@ -583,11 +579,11 @@ This block of code installs and configures the <b>fancy-compilation</b> package 
 </div>
 </div>
 
-<div id="outline-container-org48aa420" class="outline-3">
-<h3 id="org48aa420">Counsel Settings</h3>
-<div class="outline-text-3" id="text-org48aa420">
+<div id="outline-container-org4ee7363" class="outline-3">
+<h3 id="org4ee7363">Counsel Settings</h3>
+<div class="outline-text-3" id="text-org4ee7363">
 <p>
-This block of code installs and configures the <b>fancy-compilation</b> package via the <b>use-package</b> macro. The fancy-compilation package offers a more visually attractive compilation buffer in Emacs. The <b>:config</b> keyword precedes a call to the <b>fancy-compilation-mode</b> function, enabling this mode.
+This Emacs Lisp script is for loading and configuring the 'counsel' package. It ensures that the 'counsel' package is installed, if not it installs it. The script also reduces or eliminates minor mode lighter in the mode line. In its configuration options, it enables 'counsel' mode.
 </p>
 
 <div class="org-src-container">
@@ -595,15 +591,9 @@ This block of code installs and configures the <b>fancy-compilation</b> package 
 <span style="font-weight: bold; font-style: italic;">;; </span><span style="font-weight: bold; font-style: italic;">Load the 'counsel' package</span>
 (use-package counsel
   <span style="font-weight: bold;">:ensure</span> t   <span style="font-weight: bold; font-style: italic;">;; </span><span style="font-weight: bold; font-style: italic;">Ensure that the package is installed if not already</span>
-  <span style="font-weight: bold;">:after</span> ivy  <span style="font-weight: bold; font-style: italic;">;; </span><span style="font-weight: bold; font-style: italic;">Load this package after 'ivy'</span>
   <span style="font-weight: bold;">:diminish</span>   <span style="font-weight: bold; font-style: italic;">;; </span><span style="font-weight: bold; font-style: italic;">Reduce or eliminate minor mode lighter in mode line</span>
-
   <span style="font-weight: bold;">:config</span>     <span style="font-weight: bold; font-style: italic;">;; </span><span style="font-weight: bold; font-style: italic;">Configuration options for 'counsel'</span>
-  (counsel-mode 1)  <span style="font-weight: bold; font-style: italic;">;; </span><span style="font-weight: bold; font-style: italic;">Enable 'counsel' mode</span>
-
-  <span style="font-weight: bold; font-style: italic;">;; </span><span style="font-weight: bold; font-style: italic;">Set initial input to nil. This prevents Ivy from populating </span>
-  <span style="font-weight: bold; font-style: italic;">;; </span><span style="font-weight: bold; font-style: italic;">the minibuffer with an initial input when you call a command.</span>
-  (<span style="font-weight: bold;">setq</span> ivy-initial-inputs-alist nil))
+  (counsel-mode 1))  <span style="font-weight: bold; font-style: italic;">;; </span><span style="font-weight: bold; font-style: italic;">Enable 'counsel' mode</span>
 
 </pre>
 </div>
@@ -611,11 +601,11 @@ This block of code installs and configures the <b>fancy-compilation</b> package 
 </div>
 
 
-<div id="outline-container-org6934637" class="outline-3">
-<h3 id="org6934637">Dired Settings</h3>
-<div class="outline-text-3" id="text-org6934637">
+<div id="outline-container-org507a0fb" class="outline-3">
+<h3 id="org507a0fb">Dired Settings</h3>
+<div class="outline-text-3" id="text-org507a0fb">
 <p>
-This block of code configures multiple packages associated with the <b>dired</b> mode in Emacs, which offers an interface for managing files and directories. The <b>diredc</b> package is installed and remaps the dired-other-frame command to utilize diredc. The <b>dired-open</b>, <b>dired-hacks-utils</b>, and <b>dired-filter</b> packages are also installed, with the last one enabling file filtering in dired mode. The <b>dired-hide-dotfiles</b> package is installed and linked to dired-mode, hiding dotfiles by default upon opening a directory in dired mode. The <b>diredfl</b> package is installed and activated globally to add color to dired buffers. The <b>dired-rainbow</b> package is installed and set up with various rules for coloring different file types in dired mode. Lastly, the <b>eim-peep-dired</b> package is deferred until it's loaded and then configured, allowing quick file previews in dired mode.
+The Emacs Lisp code configures several packages to enhance the functionality and user experience of Dired, a directory browser in Emacs. The 'diredc' package enhances directory browsing by remapping dired-other-frame to diredc. The 'dired-open' package customizes how files are opened in Dired. The 'diredfl' package adds color to filenames for better differentiation and is configured to activate global mode. The 'dired-hacks-utils' package provides additional utilities for Dired. The 'dired-filter' package enables file filtering in Dired and activates filter mode. The 'dired-hide-dotfiles' package hides dotfiles in Dired and is hooked to activate hide-dotfiles-mode when dired-mode is enabled. The 'dired-rainbow' package colorizes filenames based on their type or extension with detailed color configurations. Lastly, the 'eim-peep-dired' package allows for previewing files in Dired with specific cleanup settings.
 </p>
 
 <div class="org-src-container">
@@ -692,11 +682,11 @@ This block of code configures multiple packages associated with the <b>dired</b>
 </div>
 </div>
 
-<div id="outline-container-org4716142" class="outline-3">
-<h3 id="org4716142">Help Settings</h3>
-<div class="outline-text-3" id="text-org4716142">
+<div id="outline-container-org97c6950" class="outline-3">
+<h3 id="org97c6950">Help Settings</h3>
+<div class="outline-text-3" id="text-org97c6950">
 <p>
-This block of code installs and configures the <b>helpful</b> package via the <b>use-package</b> macro. The helpful package offers a more detailed alternative to Emacs' built-in help functions, including commands for viewing help on callables (functions and macros), variables, commands, and keys. The <b>:commands</b> keyword ensures the availability of these helpful commands even before the full loading of the package. The <b>counsel-describe-function-function</b> and <b>counsel-describe-variable-function</b> variables are customized to utilize the corresponding helpful functions, meaning that when you employ counsel's describe function or variable commands, you will receive the enhanced information supplied by helpful.
+This Emacs Lisp script is for loading and configuring the 'helpful' package, which provides enhanced help buffers in Emacs. The script ensures that the 'helpful' package is installed if it's not already present. It defines commands provided by the package such as helpful-callable, helpful-variable, helpful-command, and helpful-key. In its custom configuration options, it sets counsel's describe function to use helpful-callable and counsel's describe variable to use helpful-variable.
 </p>
 
 <div class="org-src-container">
@@ -714,11 +704,11 @@ This block of code installs and configures the <b>helpful</b> package via the <b
 </div>
 </div>
 
-<div id="outline-container-orgd5afd0c" class="outline-3">
-<h3 id="orgd5afd0c">Neotree Settings</h3>
-<div class="outline-text-3" id="text-orgd5afd0c">
+<div id="outline-container-org72b538f" class="outline-3">
+<h3 id="org72b538f">Neotree Settings</h3>
+<div class="outline-text-3" id="text-org72b538f">
 <p>
-This block of code installs and configures the <b>neotree</b> package via the <b>use-package</b> macro. The <b>neotree</b> package offers a tree-like file explorer sidebar in Emacs. Various settings are adjusted, such as smart opening of directories (<b>neo-smart-open</b>), displaying hidden files (<b>neo-show-hidden-files</b>), setting the width of the neotree window (<b>neo-window-width</b>), permitting the neotree window to resize (<b>neo-window-fixed-size</b>), and selecting an appropriate theme depending on whether Emacs operates in graphical mode or not (<b>neo-theme</b>). It also prevents lag during scrolling through large icon sets by setting <b>inhibit-compacting-font-caches</b>, and configures Projectile's switch project action to utilize Neotree. Lastly, it appends a hook to truncate long file names in the neotree buffer post-creation.
+This Emacs Lisp script is for loading and configuring the 'neotree' package, which provides a tree-like file explorer in Emacs. The script ensures that the 'neotree' package is installed if it's not already present. In its configuration options, it enables smart open feature, shows hidden files, sets the width of NeoTree window, does not fix the size of NeoTree window, sets the theme based on whether display supports graphics or not, prevents font cache compacting, and sets an action when switching projects with Projectile. It also includes a hook to truncate long file names in neotree.
 </p>
 
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
@@ -781,11 +771,11 @@ This block of code installs and configures the <b>neotree</b> package via the <b
 </div>
 </div>
 
-<div id="outline-container-org852bf0e" class="outline-3">
-<h3 id="org852bf0e">Icon Settings</h3>
-<div class="outline-text-3" id="text-org852bf0e">
+<div id="outline-container-orgcd20806" class="outline-3">
+<h3 id="orgcd20806">Icon Settings</h3>
+<div class="outline-text-3" id="text-orgcd20806">
 <p>
-This block of code installs and configures several packages associated with the use of icons in Emacs. The <b>nerd-icons</b>, <b>nerd-icons-dired</b>, <b>treemacs-nerd-icons</b>, <b>nerd-icons-ibuffer</b>, and <b>nerd-icons-completion</b> packages are all installed, providing a set of file type icons for various modes (Dired, Treemacs, Ibuffer, and completion). The icon theme for Treemacs is designated as "nerd-icons", and several settings are adjusted for Ibuffer. The <b>all-the-icons</b>, <b>all-the-icons-dired</b>, and <b>all-the-icons-completion</b> packages are also installed, supplying another set of file type icons for use in Dired mode and during completion. If the necessary font isn't found, it's automatically installed. A hook is added to activate all-the-icons-dired-mode whenever Dired mode is entered, and monochrome icons are disabled.
+The Emacs Lisp script loads and configures several packages that provide icon support in Emacs. The 'nerd-icons' package provides icons with the font family set to "Symbols Nerd Font Mono". The 'nerd-icons-dired' package displays icons in Dired mode, enabling nerd-icons-dired-mode in dired-mode. The 'treemacs-nerd-icons' package shows icons in Treemacs by loading the nerd-icons theme. The 'nerd-icons-ibuffer' package displays icons in Ibuffer mode, enabling nerd-icons-ibuffer-mode in ibuffer-mode with various configurations. The 'nerd-icons-completion' package offers icon completion by enabling nerd-icons-completion-mode. The 'all-the-icons' package provides icons in Emacs, only loading if display supports graphics and installs fonts if not present. The 'all-the-icons-dired' package displays icons in Dired mode, enabling all-the-icons-dired-mode in dired-mode without using monochrome icons. Lastly, the 'all-the-icons-completion' package provides icon completion by enabling all-the-icons-completion-mode and setting up marginalia with all-the-icons.
 </p>
 
 <div class="org-src-container">
@@ -849,11 +839,11 @@ This block of code installs and configures several packages associated with the 
 </div>
 </div>
 
-<div id="outline-container-org53e6519" class="outline-3">
-<h3 id="org53e6519">Dashboard Settings</h3>
-<div class="outline-text-3" id="text-org53e6519">
+<div id="outline-container-orgcee6a1c" class="outline-3">
+<h3 id="orgcee6a1c">Dashboard Settings</h3>
+<div class="outline-text-3" id="text-orgcee6a1c">
 <p>
-This block of code installs and configures several packages associated with Emacs' startup <b>dashboard</b>, project management, and perspectives. The <b>dashboard</b> package is installed and configured, offering a customizable startup dashboard for Emacs. Various settings are adjusted, such as the initial buffer choice, usage of heading and file icons, the banner logo title, centered content, and the items displayed on the dashboard. The <b>projectile</b> package is also installed and activated, providing robust project management features in Emacs. The <b>perspective</b> package is installed and configured, supplying multiple "perspectives", each with its unique set of buffers and window configurations. Several settings are adjusted, including suppression of prefix key warnings, setting the mode prefix key, activating perspective mode, turning on the mode string, and designating a default state file. A hook is appended to group buffers by perspective name in Ibuffer, and another hook is added to automatically save perspective states when Emacs exits.
+The Emacs Lisp script loads and configures several packages that enhance the startup screen, project management, and workspace management in Emacs. The 'dashboard' package provides a pleasant startup screen by setting the initial buffer to be the dashboard, enabling heading and file icons, setting banner title, centering content, specifying items to show on the dashboard, modifying heading icons, and setting up the dashboard at startup. The 'projectile' package is used for project management and is configured to enable Projectile mode. The 'perspective' package is used for workspace management; it suppresses prefix key warning, sets prefix key for Perspective mode, enables Perspective mode, turns on mode string, and sets a file to write to when states are saved. It also groups buffers by persp-name in ibuffer and automatically saves perspective states to file when Emacs exits.
 </p>
 
 <div class="org-src-container">
@@ -911,11 +901,11 @@ This block of code installs and configures several packages associated with Emac
 </div>
 </div>
 
-<div id="outline-container-orgc77df72" class="outline-3">
-<h3 id="orgc77df72">Which Key Settings</h3>
-<div class="outline-text-3" id="text-orgc77df72">
+<div id="outline-container-orgfabd48b" class="outline-3">
+<h3 id="orgfabd48b">Which Key Settings</h3>
+<div class="outline-text-3" id="text-orgfabd48b">
 <p>
-This block of code installs and configures the <b>which-key</b> package via the <b>use-package</b> macro. The <b>which-key</b> package offers a popup that shows available keybindings following your currently entered incomplete command (a prefix) in Emacs, activated with (which-key-mode 1). Various settings are adjusted, such as the location of the which-key window (<b>which-key-side-window-location</b>), the sort order for keys (<b>which-key-sort-order</b>), allowance for imprecise window fit (<b>which-key-allow-imprecise-window-fit</b>), sorting of uppercase keys first (<b>which-key-sort-uppercase-first</b>), column padding (<b>which-key-add-column-padding</b>), maximum display columns (<b>which-key-max-display-columns</b>), minimum display lines (<b>which-key-min-display-lines</b>), side window slot (<b>which-key-side-window-slot</b>), maximum height of the side window (<b>which-key-side-window-max-height</b>), idle delay before showing the popup (<b>which-key-idle-delay</b>), maximum description length (<b>which-key-max-description-length</b>), and the separator between keys and their descriptions (<b>which-key-separator</b>).
+This Emacs Lisp script is for loading and configuring the 'which-key' package, which displays available keybindings in a popup. The script ensures that the 'which-key' package is installed if it's not already present. It enables 'which-key' mode and sets various configuration options such as the location of the which-key window, sorting order of keys, column padding, minimum display lines, side window slot, maximum height of the side window, idle delay before the which-key popup appears, maximum description length, and separator string.
 </p>
 
 <div class="org-src-container">
@@ -946,15 +936,15 @@ This block of code installs and configures the <b>which-key</b> package via the 
 </div>
 </div>
 
-<div id="outline-container-org729dacf" class="outline-2">
-<h2 id="org729dacf">KEYBINDING SETTINGS</h2>
-<div class="outline-text-2" id="text-org729dacf">
+<div id="outline-container-org6fa42a5" class="outline-2">
+<h2 id="org6fa42a5">Keybindings</h2>
+<div class="outline-text-2" id="text-org6fa42a5">
 </div>
-<div id="outline-container-org9ceed1b" class="outline-3">
-<h3 id="org9ceed1b">Evil Mode Settings</h3>
-<div class="outline-text-3" id="text-org9ceed1b">
+<div id="outline-container-org0c90ca6" class="outline-3">
+<h3 id="org0c90ca6">Evil Mode Settings</h3>
+<div class="outline-text-3" id="text-org0c90ca6">
 <p>
-This block of code installs and configures several packages associated with the <b>evil</b> package, offering Vim-like keybindings in Emacs. The <b>evil</b> package itself is installed and configured, adjusting various settings such as disabling evil's own keybinding setup (<b>evil-want-keybinding</b>), setting the undo system (<b>evil-undo-system</b>), activating evil mode, and designating the initial state for specific modes as normal. The <b>evil-collection</b> package is installed and set up to operate post-<b>evil</b>. This package supplies additional evil keybindings for numerous different modes, with the help mode added to the list of modes for which evil-collection should provide keybindings. The <b>undo-fu</b> package is installed, offering a redo command that works with evil's undo system. Some keys are unmapped in 'evil-maps to allow Org mode's link following functionality to operate correctly. The <b>evil-tex</b> package is installed and set up to run post-AUCTEX and <b>evil</b>, activated whenever LaTeX mode is entered. The <b>evil-surround</b> package is installed and globally enabled, providing Vim's surround functionality in Emacs. Lastly, the <b>evil-nerd-commenter</b> package is installed and bound to "M-/". This package offers Vim-like commenting for multiple languages.
+The Emacs Lisp script loads and configures several packages that provide Vim emulation, additional keybindings, better undo/redo functionality, LaTeX support, surround functionality, and commenting/uncommenting lines in Emacs. The 'evil' package provides Vim emulation with configurations for not loading default keybindings, setting the undo system to 'undo-fu', enabling Evil mode, and setting initial states of messages buffer and dashboard to normal. The 'evil-collection' package offers additional Evil keybindings, loaded after Evil, adds help mode to the evil collection list, and initializes evil-collection. The 'undo-fu' package enhances undo/redo functionality. The 'evil-tex' package provides LaTeX support in Evil, loaded after AUCTeX and Evil, and enables evil-tex mode in LaTeX mode. The 'evil-surround' package provides surround functionality in Evil by enabling global Evil Surround mode. The 'evil-nerd-commenter' package allows for commenting/uncommenting lines in Evil by binding M-/ to comment or uncomment lines. Additionally, keys are unmapped in 'evil-maps so that Org mode's link following works correctly.
 </p>
 
 <div class="org-src-container">
@@ -1013,9 +1003,9 @@ This block of code installs and configures several packages associated with the 
 </div>
 </div>
 
-<div id="outline-container-org11cfff7" class="outline-3">
-<h3 id="org11cfff7">General Keybinding Settings</h3>
-<div class="outline-text-3" id="text-org11cfff7">
+<div id="outline-container-orgf45e82b" class="outline-3">
+<h3 id="orgf45e82b">General Keybinding Settings</h3>
+<div class="outline-text-3" id="text-orgf45e82b">
 <p>
 This code block integrates and configures the '<b>general</b>' package, which provides a convenient way to define keybindings in Emacs. It sets up 'SPC' as the global leader key that can be used to trigger various commands.
 </p>
@@ -1036,6 +1026,7 @@ This code block integrates and configures the '<b>general</b>' package, which pr
 <li>The fifteenth set of bindings provides toggles for various modes and features like Eshell, Flycheck, line numbers display, Neotree file viewer, Org mode, Rainbow mode, truncated lines, and VTerm.</li>
 <li>The last set of bindings is for window management. These include closing, creating, splitting windows horizontally or vertically, moving between windows, and moving buffers within windows.</li>
 </ul>
+
 <p>
 These configurations aim to provide quick access to frequently used commands and enhance productivity by reducing the number of keystrokes needed for common tasks.
 </p>
@@ -1266,15 +1257,15 @@ These configurations aim to provide quick access to frequently used commands and
 </div>
 </div>
 
-<div id="outline-container-orgedd7a1f" class="outline-2">
-<h2 id="orgedd7a1f">TERMINAL FRAMEWORKS</h2>
-<div class="outline-text-2" id="text-orgedd7a1f">
+<div id="outline-container-org08f9ecb" class="outline-2">
+<h2 id="org08f9ecb">Terminal Frameworks</h2>
+<div class="outline-text-2" id="text-org08f9ecb">
 </div>
-<div id="outline-container-org882da49" class="outline-3">
-<h3 id="org882da49">Vterm Settings</h3>
-<div class="outline-text-3" id="text-org882da49">
+<div id="outline-container-orga82461d" class="outline-3">
+<h3 id="orga82461d">Vterm Settings</h3>
+<div class="outline-text-3" id="text-orga82461d">
 <p>
-This block of code installs and configures the <b>vterm</b> package and the <b>vterm-toggle</b> package in Emacs. The <b>vterm</b> package offers a fully-fledged terminal emulator within Emacs, configured to recognize custom shell prompts (<b>term-prompt-regexp</b>), utilize Zsh as the default shell (<b>vterm-shell</b>), and store up to 10,000 lines in its scrollback buffer (<b>vterm-max-scrollback</b>). The <b>vterm-toggle</b> package is installed and set up to operate post-<b>vterm</b>. This package supplies commands for swiftly toggling a vterm window, adjusting various settings such as disabling fullscreen toggle (<b>vterm-toggle-fullscreen-p</b>), setting the scope to 'project (<b>vterm-toggle-scope</b>), and appending a rule to the display-buffer-alist to reuse windows for vterm buffers and display them at the bottom of the frame with a height of 40% of the frame.
+This Emacs Lisp script configures the vterm package, providing a terminal emulator within Emacs, and the vterm-toggle package for toggling vterm windows. vterm is set up to recognize custom shell prompts, launch the zsh shell, and limit scrollback. Meanwhile, vterm-toggle is configured to disable fullscreen mode, employ a 'project' scope, and modify buffer display rules, ensuring vterm buffers appear at the bottom of the screen. These configurations optimize the terminal emulation experience in Emacs.
 </p>
 
 <div class="org-src-container">
@@ -1316,11 +1307,11 @@ This block of code installs and configures the <b>vterm</b> package and the <b>v
 </div>
 </div>
 
-<div id="outline-container-orga36aa04" class="outline-3">
-<h3 id="orga36aa04">Eshell Settings</h3>
-<div class="outline-text-3" id="text-orga36aa04">
+<div id="outline-container-orgda328c7" class="outline-3">
+<h3 id="orgda328c7">Eshell Settings</h3>
+<div class="outline-text-3" id="text-orgda328c7">
 <p>
-This block of code installs and configures the <b>eshell-toggle</b> package and the <b>eshell-syntax-highlighting</b> package in Emacs. The <b>eshell-toggle</b> package offers a command to swiftly toggle an Eshell window, adjusting it to use 1/4 of the frame for the Eshell window (<b>eshell-toggle-size-fraction</b>), utilize the Projectile project root if available (<b>eshell-toggle-use-projectile-root</b>), initialize new Eshell windows with Eshell mode (<b>eshell-toggle-init-function</b>), and avoid running any command when toggling the Eshell window (<b>eshell-toggle-run-command</b>). The <b>eshell-syntax-highlighting</b> package is installed and set up to operate post-<b>eshell-mode</b>. This package supplies syntax highlighting in Eshell, enabling Global mode, setting the git prompt theme to 'powerline, and configuring several settings related to history size, ignoring duplicates in history, scrolling behavior, buffer destruction, and visual commands. Lastly, a function is defined to disable company mode in Eshell buffers, and this function is added to the <b>eshell-mode-hook</b>.
+This Emacs Lisp script configures two packages: 'eshell-toggle' and 'eshell-syntax-highlighting.' The 'eshell-toggle' package is set up to toggle Eshell windows, with options for size fraction, projectile root usage, and Eshell initialization. It avoids executing any command when toggling Eshell. The 'eshell-syntax-highlighting' package adds syntax highlighting to Eshell, activated after eshell-mode. Configuration includes enabling global syntax highlighting, using a powerline theme for the git prompt, specifying history size and maximum lines, managing duplicates in the history, and adjusting scrolling behavior and buffer handling. Additionally, the script disables company mode in Eshell, adds a hook for disabling company mode when entering Eshell, and enhances tab completion in Eshell through setup functions and a hook added to eshell-mode-hook.
 </p>
 
 <div class="org-src-container">
@@ -1404,15 +1395,15 @@ This block of code installs and configures the <b>eshell-toggle</b> package and 
 </div>
 </div>
 
-<div id="outline-container-org8e66cfc" class="outline-2">
-<h2 id="org8e66cfc">COMPLETION FRAMEWORKS</h2>
-<div class="outline-text-2" id="text-org8e66cfc">
+<div id="outline-container-org8998480" class="outline-2">
+<h2 id="org8998480">Completion Frameworks</h2>
+<div class="outline-text-2" id="text-org8998480">
 </div>
-<div id="outline-container-org83b2d57" class="outline-3">
-<h3 id="org83b2d57">Vertico Mode Settings</h3>
-<div class="outline-text-3" id="text-org83b2d57">
+<div id="outline-container-orgdf976a5" class="outline-3">
+<h3 id="orgdf976a5">Vertico Mode Settings</h3>
+<div class="outline-text-3" id="text-orgdf976a5">
 <p>
-This block of code installs and configures several packages associated with completion in Emacs: <b>vertico</b>, <b>marginalia</b>, <b>embark</b>, and <b>orderless</b>. The <b>vertico</b> package offers a minimalist vertical completion UI, adjusting various settings such as the grid separator, lookahead, buffer display action, multiform categories, and multiform commands. Several functions are defined for toggling between flat and reverse modes, embarking on candidates using quick keys, and working around an issue with Tramp hostname completions. The <b>savehist-mode</b> is activated to save minibuffer history across Emacs sessions. The <b>marginalia</b> package is installed and set up to operate post-<b>vertico</b>, enhancing the minibuffer prompts with additional annotations and configuring the maximum relative age and alignment for these annotations. The <b>embark</b> package is installed with some keybindings set up for it, offering commands for acting on minibuffer completions and replacing the prefix help command with Embark's version. Lastly, the <b>orderless</b> package is installed and configured, providing a flexible completion style that matches input words in any order. The completion styles are designated as 'substring, 'orderless, and 'basic, the default completion categories are cleared, and file completion is overridden to use partial completion.
+The provided Emacs Lisp script enhances the user interface and functionality of Emacs through various package configurations. It begins by setting up the 'vertico' package for minibuffer completion, customizing grid separators, lookahead, display actions, multiform categories, and commands. Additionally, it defines functions to toggle between flat and reverse modes in 'vertico' multiform, embark on a candidate using quick keys, and provides a workaround for tramp hostname completions. Next, it enables 'savehist-mode' to store minibuffer history across sessions. The script then configures the 'marginalia' package, adjusting options related to minibuffer annotations and enabling 'marginalia' mode. Afterward, it configures the 'embark' package, binding keys for 'embark act' and related bindings, replacing the key help with a completing-read interface. Finally, it uses the 'orderless' package to set completion styles, clear default completion categories, and override completion categories for files. These configurations collectively improve the usability and efficiency of Emacs.
 </p>
 
 <div class="org-src-container">
@@ -1546,11 +1537,11 @@ This block of code installs and configures several packages associated with comp
 </div>
 </div>
 
-<div id="outline-container-org98daa04" class="outline-3">
-<h3 id="org98daa04">Consult Mode Settings</h3>
-<div class="outline-text-3" id="text-org98daa04">
+<div id="outline-container-org90551f3" class="outline-3">
+<h3 id="org90551f3">Consult Mode Settings</h3>
+<div class="outline-text-3" id="text-org90551f3">
 <p>
-This block of code installs and configures the <b>consult</b> package, the <b>consult-todo</b> package, and the <b>consult-flycheck</b> package in Emacs. The <b>consult</b> package offers various commands that utilize completion to select from a list of candidates, enabling preview at point mode in completion list buffers, setting up register previews with Consult, and replacing Xref's functions for showing xrefs and definitions with Consult's versions. The <b>consult-todo</b> package is installed using a special recipe to load it from GitHub, providing a command to search for TODO items in your project and defining a constant for narrowing down the types of TODO items. Lastly, the <b>consult-flycheck</b> package is installed and set up to operate post-<b>flycheck</b>, offering a command to select from Flycheck errors using completion and binding the command to "!" in the Flycheck command map.
+This Emacs Lisp script is dedicated to configuring several packages that enhance various aspects of interactive search, navigation, and code management within Emacs, all built around the 'consult' package as a foundation. It begins with comprehensive 'consult' package customization, enabling preview modes, defining register preview behavior, and optimizing 'xref' functionality. The script then incorporates 'consult-todo' for managing TODO items, 'consult-flycheck' to integrate Flycheck's error list, and 'consult-dir' for improved directory navigation. Together, these configurations significantly augment the user experience in Emacs, facilitating efficient code navigation, error checking, and task management.
 </p>
 
 <div class="org-src-container">
@@ -1610,15 +1601,15 @@ This block of code installs and configures the <b>consult</b> package, the <b>co
 </div>
 </div>
 
-<div id="outline-container-org6d0f78a" class="outline-2">
-<h2 id="org6d0f78a">PROGRAMMING FRAMEWORKS</h2>
-<div class="outline-text-2" id="text-org6d0f78a">
+<div id="outline-container-org36d606d" class="outline-2">
+<h2 id="org36d606d">Programming Settings</h2>
+<div class="outline-text-2" id="text-org36d606d">
 </div>
-<div id="outline-container-org17c8682" class="outline-3">
-<h3 id="org17c8682">Flycheck Settings</h3>
-<div class="outline-text-3" id="text-org17c8682">
+<div id="outline-container-orgb7a63cf" class="outline-3">
+<h3 id="orgb7a63cf">Flycheck Settings</h3>
+<div class="outline-text-3" id="text-orgb7a63cf">
 <p>
-This block of code installs and configures the <b>flycheck</b> package in Emacs. The <b>flycheck</b> package offers on-the-fly syntax checking, set up to activate Flycheck mode whenever a programming mode (<b>prog-mode</b>) is entered.
+This Emacs Lisp script configures the flycheck package, which is used for on-the-fly syntax checking in Emacs. The configuration ensures that the package is installed and diminishes its mode line lighters to reduce clutter. It also enables flycheck mode automatically in all programming modes by adding it to the 'prog-mode-hook'.
 </p>
 
 <div class="org-src-container">
@@ -1636,11 +1627,11 @@ This block of code installs and configures the <b>flycheck</b> package in Emacs.
 </div>
 </div>
 
-<div id="outline-container-orgf8ac051" class="outline-3">
-<h3 id="orgf8ac051">Highlight TODO Settings</h3>
-<div class="outline-text-3" id="text-orgf8ac051">
+<div id="outline-container-org6e29363" class="outline-3">
+<h3 id="org6e29363">Highlight TODO Settings</h3>
+<div class="outline-text-3" id="text-org6e29363">
 <p>
-This block of code installs and configures the <b>hl-todo</b> package in Emacs. The <b>hl-todo</b> package offers highlighting for TODO keywords, set up to activate hl-todo mode whenever Org mode or a programming mode (<b>prog-mode</b>) is entered. Several settings are adjusted, such as the punctuation character utilized to highlight TODO keywords (<b>hl-todo-highlight-punctuation</b>) and the faces employed to highlight various types of keywords (<b>hl-todo-keyword-faces</b>) like TODO, FIXME, HACK, REVIEW, NOTE, and DEPRECATED.
+This Emacs Lisp script configures the hl-todo package, which is used for highlighting TODO and similar keywords in comments and strings. The configuration ensures that the package is installed and enables hl-todo mode automatically in org-mode and prog-mode. It also sets punctuation for highlighting and customizes faces (colors and styles) for different keywords such as "TODO", "FIXME", "HACK", "REVIEW", "NOTE", and "DEPRECATED".
 </p>
 
 <div class="org-src-container">
@@ -1668,11 +1659,11 @@ This block of code installs and configures the <b>hl-todo</b> package in Emacs. 
 </div>
 </div>
 
-<div id="outline-container-org3be50cb" class="outline-3">
-<h3 id="org3be50cb">LSP Settings</h3>
-<div class="outline-text-3" id="text-org3be50cb">
+<div id="outline-container-org3f9d9c9" class="outline-3">
+<h3 id="org3f9d9c9">LSP Settings</h3>
+<div class="outline-text-3" id="text-org3f9d9c9">
 <p>
-This block of code installs and configures several packages associated with the Language Server Protocol (LSP) in Emacs: <b>lsp-mode</b>, <b>lsp-ui</b>, <b>lsp-pyright</b>, <b>lsp-java</b>, and <b>consult-lsp</b>. The <b>lsp-mode</b> package offers an interface for LSP servers, set up to activate deferred LSP mode whenever certain programming modes are entered, including C, C++, Java, JavaScript, TypeScript, Python, Web, Verilog, Haskell, and Org modes. Various settings related to logging, auto-configuration, symbol highlighting, on-type formatting, signature activation, completion at point, cross-referencing, modeline actions, diagnostics, breadcrumbs, semantic tokens, flymake usage, native JSON usage, indentation, imenu, response timeout, workspace restarting, workspace keeping alive, Eldoc rendering, process output reading, idle delay, snippet enabling, and folding are adjusted. The <b>lsp-ui</b> package provides a UI for LSP mode, configured to enable lsp-ui mode whenever lsp-mode is activated and adjusting several settings. The <b>lsp-pyright</b> package offers a Pyright server for Python development with LSP, set up to require 'lsp-pyright whenever Python mode is entered, and designating the Pyright Python executable command as "python3" if it's available. The <b>lsp-java</b> package supplies a Java server for Java development with LSP, installed to operate post-<b>lsp</b>. Lastly, the <b>consult-lsp</b> package is installed, providing Consult commands that utilize LSP.
+This Emacs Lisp script configures several packages related to the Language Server Protocol (LSP) to enhance the development experience for various programming languages. It begins by setting up 'lsp-mode,' enabling 'lsp-deferred' in various modes, and defining commands and options. Then, it configures 'lsp-ui,' which provides additional UI elements like sideline diagnostics and documentation popups, with various customization options. For Python development, 'lsp-pyright' is used, integrated into 'python-mode' and configuring the Python executable command. 'lsp-java' is loaded for Java development. Lastly, it ensures the installation of 'consult-lsp' to integrate 'Consult' with 'LSP,' improving code navigation and completion. These configurations collectively enhance the IDE-like features for multiple programming languages in Emacs.
 </p>
 
 <div class="org-src-container">
@@ -1766,11 +1757,11 @@ This block of code installs and configures several packages associated with the 
 </div>
 </div>
 
-<div id="outline-container-orgcd6b1ba" class="outline-3">
-<h3 id="orgcd6b1ba">Git Settings</h3>
-<div class="outline-text-3" id="text-orgcd6b1ba">
+<div id="outline-container-org08f8741" class="outline-3">
+<h3 id="org08f8741">Git Settings</h3>
+<div class="outline-text-3" id="text-org08f8741">
 <p>
-This block of code installs and configures several packages associated with Git in Emacs: <b>magit</b>, <b>forge</b>, <b>git-commit</b>, <b>git-gutter+</b>, <b>git-gutter-fringe+</b>, and <b>git-timemachine</b>. The <b>magit</b> package offers an interface for Git, adjusting the path to the Git executable (<b>magit-git-executable</b>) and setting to follow symbolic links when using VC commands (<b>vc-follow-symlinks</b>). The <b>forge</b> package is installed to operate post-<b>magit</b>, providing an interface for interacting with Git forges, such as GitHub and GitLab. The <b>git-commit</b> package is installed with global git commit mode enabled, offering support for editing Git commit messages. The <b>git-gutter+</b> package supplies a way to see Git changes in the gutter (the space between line numbers and text), set up to enable global git gutter+ mode, designate various signs for different types of changes, and not hide the gutter. The <b>git-gutter-fringe+</b> package is installed and configured to activate global git gutter+ mode and adjust the colors of the fringe indicators for modified lines. Lastly, the <b>git-timemachine</b> package is installed and set up to run after itself, offering a way to navigate through the history of a file in Git and setting up some keybindings for showing previous and next revisions in timemachine mode.
+This Emacs Lisp script is dedicated to configuring multiple packages for efficient Git version control within the Emacs environment. It commences with 'magit' configuration, a comprehensive Git user interface, adjusting the path to the Git executable and enabling symlink following. A post-refresh hook is included to update the doom modeline. Subsequently, 'forge' is set up to facilitate seamless interactions with Git forges like GitHub and GitLab from within 'magit.' The script also employs 'git-commit' to enhance Git commit message editing by enabling global git commit mode. Furthermore, it configures 'git-gutter+' to display Git diff information in the gutter, making hunk navigation more convenient, and customizes mode line lighters. Additionally, 'git-gutter-fringe+' extends 'git-gutter+' by adding fringe markers, customizing face colors for different changes. Lastly, it ensures the installation of 'git-timemachine,' enabling the stepping through of historic versions of Git-controlled files, with keymaps normalized and custom keys defined for navigation within 'git-timemachine' mode. These configurations collectively optimize Git version control workflows in Emacs.
 </p>
 
 <div class="org-src-container">
@@ -1846,11 +1837,11 @@ This block of code installs and configures several packages associated with Git 
 </div>
 </div>
 
-<div id="outline-container-org5d49aaf" class="outline-3">
-<h3 id="org5d49aaf">YASnippet Settings</h3>
-<div class="outline-text-3" id="text-org5d49aaf">
+<div id="outline-container-org775df7c" class="outline-3">
+<h3 id="org775df7c">YASnippet Settings</h3>
+<div class="outline-text-3" id="text-org775df7c">
 <p>
-This block of code installs and configures the <b>yasnippet</b> package in Emacs. The <b>yasnippet</b> package offers support for snippets, which are templates that can be inserted into your documents. It's set up to activate global yasnippet mode, designate the directory where snippets are stored (<b>yas-snippet-dirs</b>), reload all snippets, and enable yasnippet minor mode whenever a programming mode (<b>prog-mode</b>) is entered.
+This Emacs Lisp script configures the yasnippet package, which is used for inserting template snippets in Emacs. The configuration ensures that the package is installed and enables yasnippet globally. It also sets a directory for storing user-defined snippets and reloads all snippets. Finally, it enables yasnippet minor mode automatically in all programming modes by adding it to the 'prog-mode-hook'.
 </p>
 
 <div class="org-src-container">
@@ -1873,11 +1864,11 @@ This block of code installs and configures the <b>yasnippet</b> package in Emacs
 </div>
 </div>
 
-<div id="outline-container-org9354528" class="outline-3">
-<h3 id="org9354528">Markdown Settings</h3>
-<div class="outline-text-3" id="text-org9354528">
+<div id="outline-container-orga7d756f" class="outline-3">
+<h3 id="orga7d756f">Markdown Settings</h3>
+<div class="outline-text-3" id="text-orga7d756f">
 <p>
-This block of code installs and configures the <b>markdown-mode</b> package in Emacs. The <b>markdown-mode</b> package offers support for editing Markdown files, set up to utilize GitHub Flavored Markdown mode (<b>gfm-mode</b>) whenever a file with the .markdown or .md extension is opened.
+This Emacs Lisp code block is used to install and configure the markdown-mode package in Emacs. It sets up Emacs to automatically use GitHub Flavored Markdown mode (gfm-mode) when opening files with .markdown or .md extensions.
 </p>
 
 <div class="org-src-container">
@@ -1895,11 +1886,11 @@ This block of code installs and configures the <b>markdown-mode</b> package in E
 </div>
 </div>
 
-<div id="outline-container-org8080c05" class="outline-3">
-<h3 id="org8080c05">JSON Settings</h3>
-<div class="outline-text-3" id="text-org8080c05">
+<div id="outline-container-orgf41dd19" class="outline-3">
+<h3 id="orgf41dd19">JSON Settings</h3>
+<div class="outline-text-3" id="text-orgf41dd19">
 <p>
-This block of code installs and configures the <b>json-mode</b> package in Emacs. The <b>json-mode</b> package offers support for editing JSON files, set up to utilize json-mode whenever a file with the .json extension is opened.
+This Emacs Lisp code block is used to install and configure the json-mode package in Emacs. It ensures that any file with a .json extension will automatically open in json-mode.
 </p>
 
 <div class="org-src-container">
@@ -1916,11 +1907,11 @@ This block of code installs and configures the <b>json-mode</b> package in Emacs
 </div>
 </div>
 
-<div id="outline-container-org761d56a" class="outline-3">
-<h3 id="org761d56a">LaTeX Settings</h3>
-<div class="outline-text-3" id="text-org761d56a">
+<div id="outline-container-org99b94c5" class="outline-3">
+<h3 id="org99b94c5">LaTeX Settings</h3>
+<div class="outline-text-3" id="text-org99b94c5">
 <p>
-This block of code installs and configures several packages associated with LaTeX in Emacs: <b>auctex</b>, <b>auto-complete-auctex</b>, <b>biblio</b>, <b>cdlatex</b>, and <b>pdf-tools</b>. The <b>auctex</b> package offers an advanced environment for editing LaTeX documents, adjusting various settings such as auto-saving TeX files, automatic parsing of TeX files, not asking before saving TeX files, setting the default master file to nil, using pdflatex as the TeX engine, inserting a newline and indenting in TeX mode, enabling PDF mode, and activating RefTeX in LaTeX mode. Prettify symbols mode and Flyspell mode are also enabled whenever LaTeX mode is entered. The <b>auto-complete-auctex</b> package is installed to operate post-<b>auctex</b>, providing auto-completion for AUCTeX. The <b>biblio</b> package is installed, offering support for looking up bibliographic references from various sources. The <b>cdlatex</b> package is installed and set up to activate cdlatex mode whenever LaTeX mode is entered, supplying fast input methods for LaTeX environments and math. The <b>pdf-tools</b> package is installed but deferred until needed, providing tools for working with PDF files. Lastly, there's commented-out code for the <b>latex-preview-pane</b> package which, if uncommented, would install the package and enable latex preview pane mode whenever LaTeX mode is entered.
+This Emacs Lisp code block serves to streamline the installation and configuration of several packages designed to enhance LaTeX editing within Emacs. First and foremost, 'auctex' is configured to improve LaTeX support by setting options, enabling useful modes like prettify symbols and flyspell, and integrating 'reftex.' Additionally, 'auto-complete-auctex' offers auto-completion features tailored for AUCTeX. 'cdlatex' is set up to provide efficient input methods for LaTeX environments and math, and 'pdf-tools' is configured as a comprehensive in-Emacs PDF viewer with lazy loading. Although 'latex-preview-pane' is included, its use is commented out, as it enables LaTeX file preview directly within Emacs and can be easily activated by uncommenting the relevant configuration lines. These configurations collectively optimize the LaTeX editing experience in Emacs.
 </p>
 
 <div class="org-src-container">
@@ -1978,11 +1969,11 @@ This block of code installs and configures several packages associated with LaTe
 </div>
 </div>
 
-<div id="outline-container-orgb775fbe" class="outline-3">
-<h3 id="orgb775fbe">Python Settings</h3>
-<div class="outline-text-3" id="text-orgb775fbe">
+<div id="outline-container-org07de4b8" class="outline-3">
+<h3 id="org07de4b8">Python Settings</h3>
+<div class="outline-text-3" id="text-org07de4b8">
 <p>
-This block of code installs and configures several packages associated with Python development in Emacs: <b>python-mode</b>, <b>ein</b>, <b>python-pytest</b>, <b>py-isort</b>, <b>pyimport</b>, <b>poetry</b>, <b>pipenv</b>, and <b>elpy</b>. The <b>python-mode</b> package offers an environment for editing Python files, set up to activate deferred LSP mode whenever Python mode is entered, designate the Python shell interpreter and DAP Python executable as "python3", use debugpy as the DAP Python debugger, and require 'dap-python. The <b>ein</b> package provides support for Jupyter notebooks, enabling auto-complete, smartrep, and setting the default Jupyter server command to "jupyter-notebook". The <b>python-pytest</b> package supplies commands for running pytest tests, configured to confirm before running tests. The <b>py-isort</b> package is installed, offering a command to sort Python imports according to the isort tool. The <b>pyimport</b> package is installed, providing a command to add missing Python imports. There's commented-out code for the <b>pyenv</b> package which, if uncommented, would install the package from GitHub and enable global pyenv mode. The <b>poetry</b> package is installed, supplying an interface for Poetry, a dependency management tool for Python. The <b>pipenv</b> package is installed and set up to activate pipenv mode whenever Python mode is entered and designates the function to run after switching Pipenv environments with Projectile. Lastly, the <b>elpy</b> package is installed and enabled, providing an Emacs Lisp Python Environment.
+This Emacs Lisp code block is dedicated to installing and configuring several packages to enhance Python programming within the Emacs environment. It covers a range of functionalities, starting with 'python-mode,' which enhances Python language editing and includes configurations for 'lsp-deferred,' Python shell interpreter, and 'dap-python' options. 'ein' enables interaction with Jupyter notebooks in Emacs, with various options configured. 'python-pytest' facilitates pytest usage, confirming before running tests. 'py-isort' integrates the 'isort' tool for sorting imports, 'pyimport' adds/removes import statements, 'poetry' provides an interface to Poetry for dependency management, and 'pipenv' interfaces with Pipenv, setting up pipenv mode and project handling. 'elpy' is enabled as an Emacs Python Development Environment. Although 'pyenv' is commented out, it offers an interface to Pyenv for Python version management when uncommented. These configurations collectively optimize Python development in Emacs.
 </p>
 
 <p>
@@ -2066,11 +2057,11 @@ We use <code>lsp-mode</code> and <code>dap-mode</code> to provide a complete dev
 </div>
 </div>
 
-<div id="outline-container-org5eed012" class="outline-3">
-<h3 id="org5eed012">Typescript Settings</h3>
-<div class="outline-text-3" id="text-org5eed012">
+<div id="outline-container-org893388b" class="outline-3">
+<h3 id="org893388b">Typescript Settings</h3>
+<div class="outline-text-3" id="text-org893388b">
 <p>
-This block of code installs and configures the <b>typescript-mode</b> package in Emacs. The <b>typescript-mode</b> package offers an environment for editing TypeScript files, set up to utilize typescript-mode whenever a file with the .ts extension is opened, activate deferred LSP mode whenever TypeScript mode is entered, and designate the indentation level as 4 spaces.
+This Emacs Lisp code block installs and configures the typescript-mode package in Emacs. It sets up Emacs to automatically use TypeScript mode for .ts files, enables on-demand loading of Language Server Protocol features, and sets the indentation level for TypeScript code to 4 spaces.
 </p>
 
 <p>
@@ -2096,11 +2087,11 @@ For <code>lsp-mode</code> to work with TypeScript (and JavaScript) you will need
 </div>
 </div>
 
-<div id="outline-container-org48ede87" class="outline-3">
-<h3 id="org48ede87">Verilog-Mode Settings</h3>
-<div class="outline-text-3" id="text-org48ede87">
+<div id="outline-container-org8be6c0e" class="outline-3">
+<h3 id="org8be6c0e">Verilog-Mode Settings</h3>
+<div class="outline-text-3" id="text-org8be6c0e">
 <p>
-This block of code installs and configures the <b>verilog-mode</b> and <b>verilog-ext</b> packages in Emacs. The <b>verilog-mode</b> package offers an environment for editing Verilog files. The <b>verilog-ext</b> package extends <b>verilog-mode</b> with additional features, set up to operate post-<b>verilog-mode</b>, activate verilog-ext mode whenever Verilog mode is entered, establish a list of features to be utilized (<b>verilog-ext-feature-list</b>), set up verilog-ext mode, designate the LSP server as 've-svlangserver, assign the hierarchy backend as 'builtin, appoint the hierarchy frontend as 'hierarchy, select the tags backend as 'tree-sitter, and determine the function to create the Imenu index as 'verilog-ext-imenu-index. Lastly, there's commented-out code for the <b>verilog-ts-mode</b> package which, if uncommented, would associate the .sv, .vh, and .s file extensions with verilog-ts-mode.
+This Emacs Lisp code block configures and ensures the installation of the 'verilog-mode' and 'verilog-ext' packages for improved support in Emacs when working with Verilog files. 'verilog-ext' is set up to work in conjunction with 'verilog-mode' and is configured with various features like syntax highlighting, cross-referencing, code completion, hierarchy navigation, language server support (using ve-svlangserver), linting with flycheck, code beautification, and more. Additionally, it defines the indexing function for imenu and specifies certain backend and frontend options for hierarchy and tags handling. Note that there's also a commented-out section for 'verilog-ts-mode' if you wish to use it. These configurations aim to enhance the Verilog development experience in Emacs.
 </p>
 
 <div class="org-src-container">
@@ -2157,11 +2148,11 @@ This block of code installs and configures the <b>verilog-mode</b> and <b>verilo
 </div>
 </div>
 
-<div id="outline-container-org5b5cce5" class="outline-3">
-<h3 id="org5b5cce5">Emacs Lisp Settings</h3>
-<div class="outline-text-3" id="text-org5b5cce5">
+<div id="outline-container-orgeceea6c" class="outline-3">
+<h3 id="orgeceea6c">Emacs Lisp Settings</h3>
+<div class="outline-text-3" id="text-orgeceea6c">
 <p>
-This block of code adds a hook to <b>emacs-lisp-mode</b>. When Emacs enters <b>emacs-lisp-mode</b>, it executes an anonymous function that enables Eldoc mode, displaying information about Lisp functions and variables in the echo area as you type, and binds the key sequence C-c C-c to the command <b>byte-recompile-directory</b>, which recompiles all .el files in a directory into bytecode for faster execution.
+This Emacs Lisp code block sets up a hook for the 'emacs-lisp-mode,' which is used for editing Emacs Lisp code. When in 'emacs-lisp-mode,' the script enables 'eldoc-mode' to provide helpful documentation about functions and variables in the Emacs Lisp code you're writing. It also defines a key binding within 'emacs-lisp-mode'—pressing Ctrl-c Ctrl-c ('C-c C-c') triggers the 'byte-recompile-directory' function, which recompiles all .el files in the current directory. This setup enhances the development experience when working with Emacs Lisp code by providing real-time documentation assistance and a convenient key binding for recompilation.
 </p>
 
 <div class="org-src-container">
@@ -2179,9 +2170,9 @@ This block of code adds a hook to <b>emacs-lisp-mode</b>. When Emacs enters <b>e
 </div>
 </div>
 
-<div id="outline-container-org235a6db" class="outline-3">
-<h3 id="org235a6db">YAML Settings</h3>
-<div class="outline-text-3" id="text-org235a6db">
+<div id="outline-container-orge756695" class="outline-3">
+<h3 id="orge756695">YAML Settings</h3>
+<div class="outline-text-3" id="text-orge756695">
 <p>
 This block of code installs the <b>yaml-mode</b> package in Emacs, but defers its loading until it's needed. The <b>yaml-mode</b> package offers an environment for editing YAML files.
 </p>
@@ -2198,9 +2189,9 @@ This block of code installs the <b>yaml-mode</b> package in Emacs, but defers it
 </div>
 </div>
 
-<div id="outline-container-org54657c7" class="outline-3">
-<h3 id="org54657c7">Scala Settings</h3>
-<div class="outline-text-3" id="text-org54657c7">
+<div id="outline-container-orge96d261" class="outline-3">
+<h3 id="orge96d261">Scala Settings</h3>
+<div class="outline-text-3" id="text-orge96d261">
 <p>
 This block of code installs the <b>scala-mode</b> package in Emacs. The <b>scala-mode</b> package offers an environment for editing Scala files.
 </p>
@@ -2216,11 +2207,11 @@ This block of code installs the <b>scala-mode</b> package in Emacs. The <b>scala
 </div>
 </div>
 
-<div id="outline-container-org804e2a6" class="outline-3">
-<h3 id="org804e2a6">ORG Settings</h3>
-<div class="outline-text-3" id="text-org804e2a6">
+<div id="outline-container-orgbbd9319" class="outline-3">
+<h3 id="orgbbd9319">ORG Settings</h3>
+<div class="outline-text-3" id="text-orgbbd9319">
 <p>
-This block of code installs and configures several packages associated with Org mode in Emacs: <b>org-tempo</b>, <b>toc-org</b>, <b>org-bullets</b>, <b>org-ref</b>, and <b>org-alert</b>. The <b>org-tempo</b> package is required, providing templates for Org mode. The <b>toc-org</b> package is installed and set up to activate toc-org mode whenever Org mode is entered, offering support for tables of contents in Org files. The <b>org-bullets</b> package is installed and activated whenever Org mode is entered, replacing bullets in Org mode with nicer looking ones. Org indent mode is also enabled whenever Org mode is entered, which indents text according to outline structure, then the indentation is diminished (hidden) from the mode line. The source block automatic indent is set to 2 spaces instead of the default. A hook is added to prevent &lt; from auto-pairing when electric pair mode is on as this can interfere with org-tempo. Custom faces are established for different levels of Org headings, making each level a different size. The <b>org-ref</b> package is installed but disabled due to its slow loading time, configured to unescape URIs. Lastly, the <b>org-alert</b> package is installed and set up to enable org alerts and use OS X notifier style for alerts.
+This Emacs Lisp code block is dedicated to optimizing the functionality and appearance of Org Mode within Emacs. It begins by requiring 'org-tempo' for expanding Org templates and then sets up 'toc-org' and 'org-bullets' packages to enable a table of contents and improve bullet point presentation, respectively. Various hooks are added to 'org-mode' to enable 'org-indent-mode,' activate 'org-bullets-mode,' and customize the behavior of angle bracket auto-pairing. The code block also fine-tunes indentation, customizes todo keyword faces and emphasis markers, configures Org Babel languages, and customizes the appearance of different outline levels. It additionally includes 'org-ref' for reference management and 'org-alert' for alert notifications, though 'org-ref' is disabled due to slow loading. Collectively, these configurations enhance the usability and aesthetics of Org Mode for task management and document organization in Emacs.
 </p>
 
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
@@ -2382,11 +2373,11 @@ This block of code installs and configures several packages associated with Org 
 </div>
 </div>
 
-<div id="outline-container-org7de9764" class="outline-2">
-<h2 id="org7de9764">MISCELLANEOUS PACKAGES</h2>
-<div class="outline-text-2" id="text-org7de9764">
+<div id="outline-container-org6600191" class="outline-2">
+<h2 id="org6600191">Miscellaneous Packages</h2>
+<div class="outline-text-2" id="text-org6600191">
 <p>
-This block of code installs and configures several packages in Emacs: <b>sudo-edit</b>, <b>tldr</b>, <b>smartparens</b>, <b>apheleia</b>, <b>csv-mode</b>, <b>emojify</b>, <b>format-all</b>, and <b>adaptive-wrap</b>. The <b>sudo-edit</b> package offers a command to edit the current file as root. The <b>tldr</b> package provides access to tldr pages, which are simplified and community-driven man pages. The <b>smartparens</b> package supplies support for automatically inserting, wrapping, and navigating paired delimiters like parentheses, set up to enable global smartparens mode. The <b>apheleia</b> package provides automatic code formatting, configured to activate global apheleia mode. The <b>csv-mode</b> package offers an environment for editing CSV files, set up to guess and set the separator whenever csv-mode is entered. The <b>emojify</b> package provides support for displaying emojis in Emacs, configured to enable global emojify mode post-initialization. The <b>format-all</b> package offers a command to format all code according to a formatter, set up to activate format-all mode whenever a programming mode (<b>prog-mode</b>) is entered. Lastly, the <b>adaptive-wrap</b> package is installed, providing adaptive line-wrapping with wrap-prefix.
+This Emacs Lisp code block configures several packages to enhance various aspects of the Emacs environment. It begins by enabling 'sudo-edit' for editing files with sudo privileges and 'tldr' for quick access to command documentation. 'smartparens' is configured globally to improve code pairing and navigation, while 'apheleia' enables automatic code formatting. 'csv-mode' is set up to guess and set separators for CSV files automatically. 'emojify' replaces text-based emojis with graphical representations in a global mode. 'format-all' facilitates code formatting in programming modes, 'adaptive-wrap' improves text wrapping, 'simple-httpd' enables local website hosting, and 'htmlize' adds source block highlighting when publishing a website. Together, these configurations enhance productivity, code editing, and documentation lookup in Emacs.
 </p>
 
 <div class="org-src-container">
@@ -2452,9 +2443,9 @@ This block of code installs and configures several packages in Emacs: <b>sudo-ed
 </div>
 </div>
 
-<div id="outline-container-org7c0e7ef" class="outline-2">
-<h2 id="org7c0e7ef">LIST OF ALL KEYBINDINGS</h2>
-<div class="outline-text-2" id="text-org7c0e7ef">
+<div id="outline-container-org308060f" class="outline-2">
+<h2 id="org308060f">List of all Keybindings</h2>
+<div class="outline-text-2" id="text-org308060f">
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
 
@@ -3281,13 +3272,13 @@ This block of code installs and configures several packages in Emacs: <b>sudo-ed
 </div>
 </div>
 
-<div id="outline-container-org99dcaad" class="outline-2">
-<h2 id="org99dcaad">CONFIG FILE ENDS HERE</h2>
-<div class="outline-text-2" id="text-org99dcaad">
+<div id="outline-container-orgd951b2e" class="outline-2">
+<h2 id="orgd951b2e">End of the Configuration File</h2>
+<div class="outline-text-2" id="text-orgd951b2e">
 </div>
-<div id="outline-container-orge979e11" class="outline-3">
-<h3 id="orge979e11">emacs<sub>config.el</sub> file top contents</h3>
-<div class="outline-text-3" id="text-orge979e11">
+<div id="outline-container-orgdda06b4" class="outline-3">
+<h3 id="orgdda06b4">Bottom Contents</h3>
+<div class="outline-text-3" id="text-orgdda06b4">
 <p>
 This line of code is a comment signifying the end of an Emacs configuration file, typically titled <b>emacs<sub>config.el</sub></b>. In Emacs Lisp, comments commence with a semicolon (;). The quantity of semicolons utilized can represent the level or significance of the comment. Here, three semicolons are employed to denote a section-level comment.
 </p>
@@ -3301,7 +3292,7 @@ This line of code is a comment signifying the end of an Emacs configuration file
 </div>
 </div>
 <div id="postamble" class="status">
-<p class="author">Author: Anirban Chakraborty (ACH)</p>
+<p class="author">Author: Anirban Chakraborty</p>
 <p class="creator"><a href="https://www.gnu.org/software/emacs/">Emacs</a> 27.1 (<a href="https://orgmode.org">Org</a> mode 9.3)</p>
 </div>
 </body>

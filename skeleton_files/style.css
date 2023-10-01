@@ -1,14 +1,14 @@
 /* Fonts */
 @font-face {
   font-family: "et-book";
-  src: url("../skeleton_files/et-book/et-book-roman-line-figures/et-book-roman-line-figures.eot");
-  src: url("../skeleton_files/et-book/et-book-roman-line-figures/et-book-roman-line-figures.eot?#iefix")
+  src: url("https://raw.githubusercontent.com/edwardtufte/tufte-css/gh-pages/et-book/et-book-roman-line-figures/et-book-roman-line-figures.eot");
+  src: url(".https://raw.githubusercontent.com/edwardtufte/tufte-css/gh-pages/et-book/et-book-roman-line-figures/et-book-roman-line-figures.eot?#iefix")
       format("embedded-opentype"),
-    url("../skeleton_files/et-book/et-book-roman-line-figures/et-book-roman-line-figures.woff")
+    url(".https://raw.githubusercontent.com/edwardtufte/tufte-css/gh-pages/et-book/et-book-roman-line-figures/et-book-roman-line-figures.woff")
       format("woff"),
-    url("../skeleton_files/et-book/et-book-roman-line-figures/et-book-roman-line-figures.ttf")
+    url(".https://raw.githubusercontent.com/edwardtufte/tufte-css/gh-pages/et-book/et-book-roman-line-figures/et-book-roman-line-figures.ttf")
       format("truetype"),
-    url("../skeleton_files/et-book/et-book-roman-line-figures/et-book-roman-line-figures.svg#etbookromanosf")
+    url(".https://raw.githubusercontent.com/edwardtufte/tufte-css/gh-pages/et-book/et-book-roman-line-figures/et-book-roman-line-figures.svg#etbookromanosf")
       format("svg");
   font-weight: normal;
   font-style: normal;
@@ -17,14 +17,14 @@
 
 @font-face {
   font-family: "et-book";
-  src: url("../skeleton_files/et-book/et-book-display-italic-old-style-figures/et-book-display-italic-old-style-figures.eot");
-  src: url("../skeleton_files/et-book/et-book-display-italic-old-style-figures/et-book-display-italic-old-style-figures.eot?#iefix")
+  src: url(".https://raw.githubusercontent.com/edwardtufte/tufte-css/gh-pages/et-book/et-book-display-italic-old-style-figures/et-book-display-italic-old-style-figures.eot");
+  src: url(".https://raw.githubusercontent.com/edwardtufte/tufte-css/gh-pages/et-book/et-book-display-italic-old-style-figures/et-book-display-italic-old-style-figures.eot?#iefix")
       format("embedded-opentype"),
-    url("../skeleton_files/et-book/et-book-display-italic-old-style-figures/et-book-display-italic-old-style-figures.woff")
+    url(".https://raw.githubusercontent.com/edwardtufte/tufte-css/gh-pages/et-book/et-book-display-italic-old-style-figures/et-book-display-italic-old-style-figures.woff")
       format("woff"),
-    url("../skeleton_files/et-book/et-book-display-italic-old-style-figures/et-book-display-italic-old-style-figures.ttf")
+    url(".https://raw.githubusercontent.com/edwardtufte/tufte-css/gh-pages/et-book/et-book-display-italic-old-style-figures/et-book-display-italic-old-style-figures.ttf")
       format("truetype"),
-    url("../skeleton_files/et-book/et-book-display-italic-old-style-figures/et-book-display-italic-old-style-figures.svg#etbookromanosf")
+    url(".https://raw.githubusercontent.com/edwardtufte/tufte-css/gh-pages/et-book/et-book-display-italic-old-style-figures/et-book-display-italic-old-style-figures.svg#etbookromanosf")
       format("svg");
   font-weight: normal;
   font-style: italic;
@@ -33,14 +33,14 @@
 
 @font-face {
   font-family: "et-book";
-  src: url("../skeleton_files/et-book/et-book-bold-line-figures/et-book-bold-line-figures.eot");
-  src: url("../skeleton_files/et-book/et-book-bold-line-figures/et-book-bold-line-figures.eot?#iefix")
+  src: url(".https://raw.githubusercontent.com/edwardtufte/tufte-css/gh-pages/et-book/et-book-bold-line-figures/et-book-bold-line-figures.eot");
+  src: url(".https://raw.githubusercontent.com/edwardtufte/tufte-css/gh-pages/et-book/et-book-bold-line-figures/et-book-bold-line-figures.eot?#iefix")
       format("embedded-opentype"),
-    url("../skeleton_files/et-book/et-book-bold-line-figures/et-book-bold-line-figures.woff")
+    url(".https://raw.githubusercontent.com/edwardtufte/tufte-css/gh-pages/et-book/et-book-bold-line-figures/et-book-bold-line-figures.woff")
       format("woff"),
-    url("../skeleton_files/et-book/et-book-bold-line-figures/et-book-bold-line-figures.ttf")
+    url(".https://raw.githubusercontent.com/edwardtufte/tufte-css/gh-pages/et-book/et-book-bold-line-figures/et-book-bold-line-figures.ttf")
       format("truetype"),
-    url("../skeleton_files/et-book/et-book-bold-line-figures/et-book-bold-line-figures.svg#etbookromanosf")
+    url(".https://raw.githubusercontent.com/edwardtufte/tufte-css/gh-pages/et-book/et-book-bold-line-figures/et-book-bold-line-figures.svg#etbookromanosf")
       format("svg");
   font-weight: bold;
   font-style: normal;
@@ -49,14 +49,14 @@
 
 @font-face {
   font-family: "et-book-roman-old-style";
-  src: url("../skeleton_files/et-book/et-book-roman-old-style-figures/et-book-roman-old-style-figures.eot");
-  src: url("../skeleton_files/et-book/et-book-roman-old-style-figures/et-book-roman-old-style-figures.eot?#iefix")
+  src: url(".https://raw.githubusercontent.com/edwardtufte/tufte-css/gh-pages/et-book/et-book-roman-old-style-figures/et-book-roman-old-style-figures.eot");
+  src: url(".https://raw.githubusercontent.com/edwardtufte/tufte-css/gh-pages/et-book/et-book-roman-old-style-figures/et-book-roman-old-style-figures.eot?#iefix")
       format("embedded-opentype"),
-    url("../skeleton_files/et-book/et-book-roman-old-style-figures/et-book-roman-old-style-figures.woff")
+    url(".https://raw.githubusercontent.com/edwardtufte/tufte-css/gh-pages/et-book/et-book-roman-old-style-figures/et-book-roman-old-style-figures.woff")
       format("woff"),
-    url("../skeleton_files/et-book/et-book-roman-old-style-figures/et-book-roman-old-style-figures.ttf")
+    url(".https://raw.githubusercontent.com/edwardtufte/tufte-css/gh-pages/et-book/et-book-roman-old-style-figures/et-book-roman-old-style-figures.ttf")
       format("truetype"),
-    url("../skeleton_files/et-book/et-book-roman-old-style-figures/et-book-roman-old-style-figures.svg#etbookromanosf")
+    url(".https://raw.githubusercontent.com/edwardtufte/tufte-css/gh-pages/et-book/et-book-roman-old-style-figures/et-book-roman-old-style-figures.svg#etbookromanosf")
       format("svg");
   font-weight: normal;
   font-style: normal;
@@ -119,24 +119,6 @@ pre > div:first-child {
   border-top-left-radius: 0.25rem;
 }
 
-/* Highlight.js styles */
-.hljs {
-  display: block;
-  background: #f5f5f5; /* Background color for code blocks */
-  padding: 1em; /* Padding for code blocks */
-  border-radius: 0.25rem; /* Rounded corners for code blocks */
-  box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1); /* Shadow for code blocks */
-  font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
-  font-size: 1rem;
-  line-height: 1.42;
-  -webkit-text-size-adjust: 100%; /* Prevent font size adjustments */
-}
-
-/* Language-specific class, e.g., .hljs-javascript */
-.hljs-[lang] {
-  /* Define language-specific styles here, if needed */
-}
-
 /* Adjust the dark mode styles */
 @media (prefers-color-scheme: dark) {
   #table-of-contents {
@@ -152,11 +134,6 @@ pre > div:first-child {
   body {
     background-color: #151515;
     color: #ddd;
-  }
-
-  .hljs {
-    background: #1d1f21; /* Dark background color for code blocks */
-    color: #c5c8c6; /* Text color for code blocks in dark mode */
   }
 
    pre {

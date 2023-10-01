@@ -86,11 +86,7 @@
 (setq org-html-validation-link nil            ;; Don't show validation link
       org-html-head-include-scripts nil       ;; Use our own scripts
       org-html-head-include-default-style nil ;; Use our own styles
-      org-html-head "<link rel=\"stylesheet\" href=\"../skeleton_files/style.css\" />
-                     <link rel=\"stylesheet\" href=\"../skeleton_files/highlight/styles/atom-one-dark.min.css\" />
-                     <script src=\"../skeleton_files/highlight/highlight.min.js\"></script>
-                     <script>hljs.highlightAll();</script>")
-
+      org-html-head "<link rel=\"stylesheet\" href=\"https://raw.githubusercontent.com/achakraborty2591/emacs-config-website/main/skeleton_files/style.css\" />")
 
 ;; Generate the site output
 (org-publish-all t)

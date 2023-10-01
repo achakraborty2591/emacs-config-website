@@ -1,0 +1,2141 @@
+#+TITLE: GNU EMACS CONFIGURATION
+#+AUTHOR: Anirban Chakraborty
+#+DESCRIPTION: ACH's personal Emacs config.
+#+STARTUP: showeverything
+
+* Introduction
+
+This org file is basically a manual of my entire emacs configuration. This file is updatable.
+
+* Start of the Configuration File
+
+** Top contents
+
+This is the header and introductory comments for a GNU Emacs configuration file. The author/maintainer of this file is Anirban Chakraborty, whose email address and GitHub page are provided. This file is not part of the official GNU Emacs software but is distributed under the terms of the GNU General Public License version 3 or any later version. It comes without any warranty. The commentary section indicates that this file provides a complete configuration for GNU Emacs.
+
+#+BEGIN_SRC emacs-lisp
+
+;;; emacs_config.el --- GNU Emacs Configuration  -*- lexical-binding: t; -*-
+
+;; Copyright © 2022-2023, Anirban Chakraborty <achakraborty2591@gmail.com>
+
+;; Author/Maintainer: Anirban Chakraborty <achakraborty2591@gmail.com>
+;; Homepage: https://github.com/achakraborty2591/ACH-Emacs-Config
+
+;; This file is NOT part of GNU Emacs.
+
+;; This is free software: you can redistribute it and/or modify it under
+;; the terms of the GNU General Public License as published by the Free
+;; Software Foundation, either version 3 of the License, or (at your
+;; option) any later version.
+
+;; This software is distributed in the hope that it will be useful, but
+;; WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+;; Public License for more details.
+
+;; You should have received a copy of the GNU General Public License along
+;; with this software. If not, see <https://www.gnu.org/licenses/>.
+
+;;; Commentary:
+
+;; This is a complete configuration of GNU Emacs.
+
+;;; Code:
+
+#+END_SRC
+
+* Garbage Collection
+
+This Emacs Lisp code sets two configuration parameters. The first line sets the garbage collection threshold to 100,000,000 bytes, which means that automatic memory management will only start when this amount of memory has been allocated since the last garbage collection. This can help improve performance by reducing the frequency of garbage collections. The second line sets the maximum depth of the variable binding stack (also known as specpdl) to 5000. This limits how deeply functions and macros can nest in their use of local variables, helping prevent infinite recursion or excessively deep nesting from consuming all available memory.
+
+#+BEGIN_SRC emacs-lisp
+
+;; Set garbage collection threshold to 100000000
+(setq gc-cons-threshold 100000000)
+
+;; Set maximum depth of the variable binding stack (specpdl) to 5000
+(setq max-specpdl-size 5000)
+
+#+END_SRC
+
+* Personal Information
+
+The provided block of code is used to set user-specific information in Emacs. It sets the *user-full-name* as "Anirban Chakraborty" and the *user-mail-address* as "achakraborty2591@gmail.com". This information can be utilized by various Emacs packages that require user details.
+
+#+BEGIN_SRC emacs-lisp
+  (setq user-full-name "Anirban Chakraborty")
+  (setq user-mail-address "achakraborty2591@gmail.com")
+#+END_SRC
+
+* Package Manager
+
+** Elpaca Package Manager
+
+This Emacs Lisp code is configuring and using the elpaca package, a tool for managing Emacs packages. Firstly, it sets up several variables related to elpaca, including its version, directories for builds and repositories, and order of operations. Then, it checks if the elpaca repository exists in the specified directory. If not, it creates the directory and clones the elpaca repository from GitHub. It also compiles the cloned files and generates autoloads for them. After that, it adds a hook to process queues after initialization and installs support for the use-package macro with elpaca. The script then waits until the current queue has been processed before proceeding. This can be useful when installing a package which modifies a form used at the top-level. Finally, there are examples of how to use elpaca with use-package, including turning off elpaca-use-package-mode for immediate interpretation of declarations (useful for built-in Emacs features), and deferring execution of body commands.
+
+#+BEGIN_SRC emacs-lisp
+
+(defvar elpaca-installer-version 0.5)
+(defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
+(defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
+(defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
+(defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
+                              :ref nil
+                              :files (:defaults (:exclude "extensions"))
+                              :build (:not elpaca--activate-package)))
+
+(let* ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
+       (build (expand-file-name "elpaca/" elpaca-builds-directory))
+       (order (cdr elpaca-order))
+       (default-directory repo))
+  (add-to-list 'load-path (if (file-exists-p build) build repo))
+  (unless (file-exists-p repo)
+    (make-directory repo t)
+    (when (< emacs-major-version 28) 
+      (require 'subr-x))
+    (condition-case-unless-debug err
+        (if-let ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
+                 ((zerop (call-process "git" nil buffer t "clone"
+                                       (plist-get order :repo) repo)))
+                 ((zerop (call-process "git" nil buffer t "checkout"
+                                       (or (plist-get order :ref) "--"))))
+                 (emacs (concat invocation-directory invocation-name))
+                 ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
+                                       "--eval" "(byte-recompile-directory \".\" 0 'force)")))
+                 ((require 'elpaca))
+                 ((elpaca-generate-autoloads "elpaca" repo)))
+            (progn 
+              (message "%s" (buffer-string)) 
+              (kill-buffer buffer))
+          (error "%s" (with-current-buffer buffer (buffer-string))))
+      ((error) 
+       (warn "%s" err) 
+       (delete-directory repo 'recursive))))
+  (unless (require 'elpaca-autoloads nil t)
+    (require 'elpaca)
+    (elpaca-generate-autoloads "elpaca" repo)
+    (load "./elpaca-autoloads")))
+
+(add-hook 'after-init-hook #'elpaca-process-queues)
+(elpaca `(,@elpaca-order))
+
+;; Install use-package support
+(elpaca elpaca-use-package
+  ;; Enable :elpaca use-package keyword.
+  (elpaca-use-package-mode)
+  ;; Assume :elpaca t unless otherwise specified.
+  (setq elpaca-use-package-by-default t))
+
+;; Block until current queue processed.
+(elpaca-wait)
+
+;;When installing a package which modifies a form used at the top-level
+;;(e.g. a package which adds a use-package key word),
+;;use `elpaca-wait' to block until that package has been installed/configured.
+;;For example:
+;;(use-package general :demand t)
+;;(elpaca-wait)
+
+;; Expands to: (elpaca evil (use-package evil :demand t))
+;;(use-package evil :demand t)
+
+;;Turns off elpaca-use-package-mode current declartion
+;;Note this will cause the declaration to be interpreted immediately (not deferred).
+;;Useful for configuring built-in emacs features.
+(use-package emacs :elpaca nil :config (setq ring-bell-function #'ignore))
+
+;; Don't install anything. Defer execution of BODY
+(elpaca nil (message "deferred"))
+
+#+END_SRC
+
+** Automatic Package Update
+
+The Emacs Lisp code is set up to configure the auto-package-update package via the use-package macro. The directive :ensure t guarantees that the auto-package-update package will be installed if it isn't already. In the :custom section, three behaviors are established: old versions of packages will be deleted post-update, update results buffer won't be displayed after updates, and users will receive a prompt before updates are executed. Lastly, in the :config section, the function auto-package-update-maybe is invoked which checks for package updates at startup but seeks user confirmation before proceeding with them.
+
+#+BEGIN_SRC emacs-lisp
+
+(use-package auto-package-update
+  :ensure t  ;; Ensure the package is installed if not present
+  :custom
+  (auto-package-update-delete-old-versions t)  ;; Delete old versions of packages after update
+  (auto-package-update-hide-results t)  ;; Don't show the update results buffer after updates
+  (auto-package-update-prompt-before-update t)  ;; Prompt before performing updates
+  :config
+  (auto-package-update-maybe))  ;; Run auto-package-update at startup, but ask user before doing so
+
+#+END_SRC
+
+* Startup
+
+The Emacs Lisp code configures various settings for Emacs to improve usability and efficiency. It inhibits the startup message, makes the initial scratch buffer empty, requires a final newline in files, disables automatic backups, auto-save, and lockfile creation while placing backup files in a temporary directory. The UI/UX is configured with elements like visible bell, tab width, scroll behavior, double-space after periods, tooltips, toolbar, scrollbar, fringe mode, menu bar, etc. UTF-8 is set as the preferred coding system. Show-paren-mode and electric-pair-mode are enabled, but electric-indent-mode is disabled. Selected text can be replaced when typing or pasting. Line-number-mode and column-number-mode are activated. Current line highlighting is applied in programming or text modes. Other global settings include URL highlighting/linkifying, automatic file change detection, line number display, truncated lines, subword navigation, and syntax highlighting. Keybindings are also set for quitting, increasing/decreasing text scale with both keyboard and mouse wheel.
+
+#+BEGIN_SRC emacs-lisp
+
+;; Startup settings
+(setq inhibit-startup-message t)  ;; Inhibit the startup Emacs message
+(setq initial-scratch-message nil)  ;; Make the initial scratch buffer empty
+
+;; File handling settings
+(setq require-final-newline t)  ;; Require a final newline in files
+(setq backup-directory-alist `((".*" . ,temporary-file-directory)))
+(setq tramp-backup-directory-alist backup-directory-alist)  ;; Put backup files in a temporary directory
+(setq make-backup-files nil)
+(setq auto-save-default nil)
+(setq create-lockfiles nil)
+
+;; UI/UX settings
+(setq visible-bell t) ;; Set up the visible bell
+(setq tab-width 4)
+(setq indent-tabs-mode nil)
+(setq scroll-conservatively 0) ;; Reduce scroll-conservatively
+(setq mouse-drag-copy-region nil)
+(setq sentence-end-double-space nil)  ;; No Double-spaces after periods
+(setq truncate-string-ellipsis "…") ;; Unicode ellipses are better
+(setq completions-detailed t) ;; More info in completions
+(setq next-error-message-highlight t) ;; Highlight error messages more aggressively
+(when (window-system)
+      (tool-bar-mode -1)  ;; Disable the toolbar
+      (scroll-bar-mode -1)  ;; Disable visible scrollbar
+      (tooltip-mode -1) ;; Disable tooltips
+      (pixel-scroll-mode))
+(when (eq system-type 'darwin)
+      (setq ns-auto-hide-menu-bar nil))
+(set-fringe-mode 10)  ;; Give some breathing room
+(menu-bar-mode 1) ;; Enable the menu bar
+
+;; Encoding settings
+(setq locale-coding-system 'utf-8)
+(set-terminal-coding-system 'utf-8-unix)
+(set-keyboard-coding-system 'utf-8)
+(set-selection-coding-system 'utf-8)
+(prefer-coding-system 'utf-8)
+(set-charset-priority 'unicode)
+
+;; Parentheses and indentation settings
+(show-paren-mode)
+(setq show-paren-style 'mixed)
+(electric-pair-mode 1)
+(electric-indent-mode -1)   ;; Turn off the weird indenting that Emacs does by default
+
+;; Selection settings
+(delete-selection-mode 1) ;; Enable replacing the selected text when typing/pasting
+
+;; Line and column numbers settings
+(column-number-mode)
+(line-number-mode)
+
+;; Highlight current line in programming or text modes
+(require 'hl-line)
+(add-hook 'prog-mode-hook #'hl-line-mode)
+(add-hook 'text-mode-hook #'hl-line-mode)
+
+;; Other global settings
+(global-goto-address-mode)  ;; URLs should be highlighted and linkified
+(global-auto-revert-mode t) ;; Automatically show changes if the file has changed
+(global-display-line-numbers-mode t)  ;; Display line numbers
+(global-visual-line-mode t) ;; Enable truncated lines
+(global-subword-mode) ;; Enable navigating through subwords when text is in camel case
+(global-font-lock-mode t) ;; Enables font-lock (aka syntax highlighting) globally
+
+;; Keybindings
+(global-set-key [escape] 'keyboard-escape-quit)
+(global-set-key (kbd "C-=") 'text-scale-increase)
+(global-set-key (kbd "C--") 'text-scale-decrease)
+(global-set-key (kbd "<C-wheel-up>") 'text-scale-increase)
+(global-set-key (kbd "<C-wheel-down>") 'text-scale-decrease)
+
+#+END_SRC
+
+* Auto-Save
+
+The Emacs Lisp code configures the auto-save feature in Emacs to enhance file safety and data integrity. It sets the location of auto-save files to the system's temporary directory by transforming all auto-save file names and setting the prefix for auto-save list files. The auto-saving interval is set to every 1000 characters typed, while the timeout for auto-saving is set to every 120 seconds of idle time. Furthermore, a function named save-buffer-if-visiting-file is defined that saves the current buffer only if it is visiting a file and has been modified. This function is added to the auto-save-hook, enabling it to run whenever an auto-save is triggered by Emacs.
+
+#+BEGIN_SRC emacs-lisp
+
+;; Auto-save settings
+(setq auto-save-file-name-transforms `((".*" ,temporary-file-directory t))) ;; Transform the auto-save file name to use temporary directory
+(setq auto-save-list-file-prefix temporary-file-directory) ;; Set prefix for auto-save list files to be in the temporary directory
+(setq auto-save-interval 1000) ;; Set interval of auto-saving to every 1000 characters typed
+(setq auto-save-timeout 120) ;; Set timeout of auto-saving to every 120 seconds idle time
+
+;; Function to save buffer if it's visiting a file
+(defun save-buffer-if-visiting-file (&optional args)
+  "Save the current buffer only if it is visiting a file"
+  (interactive)
+  (if (and (buffer-file-name) (buffer-modified-p))
+      (save-buffer args)))
+
+;; Add function to auto-save hook
+(add-hook 'auto-save-hook #'save-buffer-if-visiting-file)
+
+#+END_SRC
+
+* Appearance 
+
+** OS X Specific Settings
+
+The Emacs Lisp code configures the exec-path-from-shell package, which is used to import environment variables like $PATH from the shell. It ensures that this package is installed and passes the -l argument to the shell. Additionally, it sets up macOS-specific settings: when Emacs runs in a window system instead of a terminal, it sets the initial frame dimensions to 160 units wide and 50 units tall. Optional configurations for starting fullscreen and setting the default font size are also provided. Line spacing is set at 0.12, and comments and keywords can be displayed in italic, although this feature is optional as it may not look good with certain fonts.
+
+#+BEGIN_SRC emacs-lisp
+
+;; Use exec-path-from-shell package to get environment variables such as $PATH from the shell
+(use-package exec-path-from-shell
+  :ensure t  ;; Ensure the package is installed if not present
+  :custom
+  (exec-path-from-shell-arguments '("-l")))  ;; Pass "-l" argument to the shell
+
+;; macOS specific settings
+(when (eq system-type 'darwin)
+  (when (window-system)
+    ;; Startup Window Dimension
+    (setq initial-frame-alist '((width . 160) (height . 50))) 
+
+    ;; Uncomment below line to start fullscreen
+    ;;(add-to-list 'default-frame-alist '(fullscreen . maximized))
+
+    ;; Set default font size (optional)
+    (set-face-attribute 'default nil :font "Fira Code-16")
+    (set-face-attribute 'default nil :height 160)
+
+    ;; Set line spacing
+    (setq-default line-spacing 0.12)
+
+    ;; Make comments and keywords italic.
+    ;; This can look bad in some fonts.
+    (set-face-attribute 'font-lock-comment-face nil :slant 'italic)
+    (set-face-attribute 'font-lock-keyword-face nil :slant 'italic)))
+
+#+END_SRC
+
+** Color Theme Settings
+
+The Emacs Lisp code configures several packages related to themes, modeline, and syntax highlighting. The 'doom-themes' package provides a set of attractive color themes with configurations for bold and italic styles, visual bell, neotree, org, and an option to load the 'doom-one' theme. The 'auto-dark' package automatically switches between light and dark themes based on time of day, setting 'doom-bluloco-dark' as the dark theme and 'doom-bluloco-light' as the light theme while enabling auto-dark-mode. The 'doom-modeline' package customizes the modeline (status bar at the bottom of an Emacs window) by configuring its height, width, indentation info, word count, buffer file name style, state icon, modification icon, perspective name, perspective icon, modal icon, and time icon. The 'rainbow-delimiters' package makes matching parentheses stand out with differing colors depending on their depth and is activated in programming modes. Similarly, the 'rainbow-mode' package colorizes color names in buffers and activates in programming modes. Lastly, the 'highlight-indent-guides' package visually indicates indent levels with guide lines, activating in programming modes and using the 'character' method for displaying guides.
+
+#+BEGIN_SRC emacs-lisp
+
+;; Use doom-themes package for theme settings
+(use-package doom-themes
+  :ensure t
+  :after all-the-icons
+  :config
+  (setq doom-themes-enable-bold t)
+  (setq doom-themes-enable-italic t)
+  ;;(load-theme 'doom-one t) ;; Uncomment to load the 'doom-one' theme
+  (doom-themes-visual-bell-config)
+  (doom-themes-neotree-config)
+  (doom-themes-org-config))
+
+;; Use auto-dark package for automatic dark mode
+(use-package auto-dark
+  :ensure t
+  :config
+  (setq auto-dark-dark-theme 'doom-bluloco-dark)
+  (setq auto-dark-light-theme 'doom-bluloco-light)
+  (auto-dark-mode 1))
+
+;; Use doom-modeline package for modeline configuration
+(use-package doom-modeline
+  :ensure t
+  :init
+  (doom-modeline-mode)
+  :config
+  (setq doom-modeline-height 40)
+  (setq doom-modeline-bar-width 5)
+  (setq doom-modeline-indent-info t)
+  (setq doom-modeline-enable-word-count t)
+  (setq doom-modeline-buffer-file-name-style 'relative-from-project)
+  (setq doom-modeline-buffer-state-icon t)
+  (setq doom-modeline-buffer-modification-icon t)
+  (setq doom-modeline-persp-name t)
+  (setq doom-modeline-persp-icon t)
+  (setq doom-modeline-modal-icon t)
+  (setq doom-modeline-icon t)
+  (setq doom-modeline-time-icon t))
+
+;; Use rainbow-delimiters package for colorful parentheses matching
+(use-package rainbow-delimiters
+  :ensure t
+  :config
+  (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
+
+;; Use rainbow-mode package for colorizing color names in buffers
+(use-package rainbow-mode
+  :ensure t
+  :diminish
+  :hook
+  (prog-mode . rainbow-mode))
+
+;; Use highlight-indent-guides package for visualizing indent levels
+(use-package highlight-indent-guides
+  :ensure t
+  :config
+  (add-hook 'prog-mode-hook 'highlight-indent-guides-mode)
+  (setq highlight-indent-guides-method 'character))
+
+#+END_SRC
+
+** Diminish Settings
+
+This Emacs Lisp code configures the diminish package in Emacs. The diminish package is used to reduce or eliminate minor modes on the mode line, making it less cluttered. The :ensure t directive ensures that the package is installed if it's not already present.
+
+#+BEGIN_SRC emacs-lisp
+
+;; Use diminish package to reduce or eliminate minor modes on the mode line
+(use-package diminish
+  :ensure t) ;; Ensure the package is installed if not present
+
+#+END_SRC
+
+** Fancy Compilation Settings
+
+This Emacs Lisp code configures the fancy-compilation package in Emacs. The fancy-compilation package is used to enhance the compilation buffer, providing a more visually appealing and informative display of compilation results. The :ensure t directive ensures that the package is installed if it's not already present, and fancy-compilation-mode is enabled in the :config section.
+
+#+BEGIN_SRC emacs-lisp
+
+;; Use fancy-compilation package to enhance the *compilation* buffer
+(use-package fancy-compilation
+  :ensure t  ;; Ensure the package is installed if not present
+  :config
+  (fancy-compilation-mode))  ;; Enable fancy-compilation mode
+
+#+END_SRC
+
+** Counsel Settings
+
+This Emacs Lisp script is for loading and configuring the 'counsel' package. It ensures that the 'counsel' package is installed, if not it installs it. The script also reduces or eliminates minor mode lighter in the mode line. In its configuration options, it enables 'counsel' mode.
+
+#+BEGIN_SRC emacs-lisp
+ 
+;; Load the 'counsel' package
+(use-package counsel
+  :ensure t   ;; Ensure that the package is installed if not already
+  :diminish   ;; Reduce or eliminate minor mode lighter in mode line
+  :config     ;; Configuration options for 'counsel'
+  (counsel-mode 1))  ;; Enable 'counsel' mode
+
+#+END_SRC
+
+
+** Dired Settings
+
+The Emacs Lisp code configures several packages to enhance the functionality and user experience of Dired, a directory browser in Emacs. The 'diredc' package enhances directory browsing by remapping dired-other-frame to diredc. The 'dired-open' package customizes how files are opened in Dired. The 'diredfl' package adds color to filenames for better differentiation and is configured to activate global mode. The 'dired-hacks-utils' package provides additional utilities for Dired. The 'dired-filter' package enables file filtering in Dired and activates filter mode. The 'dired-hide-dotfiles' package hides dotfiles in Dired and is hooked to activate hide-dotfiles-mode when dired-mode is enabled. The 'dired-rainbow' package colorizes filenames based on their type or extension with detailed color configurations. Lastly, the 'eim-peep-dired' package allows for previewing files in Dired with specific cleanup settings.
+
+#+BEGIN_SRC emacs-lisp
+
+;; Use diredc package for enhanced directory browsing
+(use-package diredc
+  :ensure t
+  :config
+  (global-set-key [remap dired-other-frame] 'diredc))
+
+;; Use dired-open package to customize file opening in Dired
+(use-package dired-open
+  :ensure t)
+
+;; Use diredfl package for colorful file names in Dired
+(use-package diredfl
+  :ensure t
+  :config
+  (diredfl-global-mode t))
+
+;; Use dired-hacks-utils package for additional utilities for Dired
+(use-package dired-hacks-utils
+  :ensure t)
+
+;; Use dired-filter package for filtering files in Dired
+(use-package dired-filter
+  :ensure t
+  :config
+  (dired-filter-mode t))
+
+;; Use dired-hide-dotfiles package to hide dotfiles in Dired
+(use-package dired-hide-dotfiles
+  :ensure t
+  :hook
+  (dired-mode . dired-hide-dotfiles-mode))
+
+;; Use dired-rainbow package for colorizing file names based on their type or extension
+(use-package dired-rainbow
+  :ensure t
+  :config
+  ;; Define custom colors for different file types
+  (progn
+    (dired-rainbow-define-chmod directory "#6cb2eb" "d.*")
+    (dired-rainbow-define html "#eb5286" ("css" "less" "sass" "scss" "htm" "html" "jhtm" "mht" "eml" "mustache" "xhtml"))
+    (dired-rainbow-define xml "#f2d024" ("xml" "xsd" "xsl" "xslt" "wsdl" "bib" "json" "msg" "pgn" "rss" "yaml" "yml" "rdata"))
+    (dired-rainbow-define document "#9561e2" ("docm" "doc" "docx" "odb" "odt" "pdb" "pdf" "ps" "rtf" "djvu" "epub" "odp" "ppt" "pptx"))
+    (dired-rainbow-define markdown "#ffed4a" ("org" "etx" "info" "markdown" "md" "mkd" "nfo" "pod" "rst" "tex" "textfile" "txt"))
+    (dired-rainbow-define database "#6574cd" ("xlsx" "xls" "csv" "accdb" "db" "mdb" "sqlite" "nc"))
+    (dired-rainbow-define media "#de751f" ("mp3" "mp4" "MP3" "MP4" "avi" "mpeg" "mpg" "flv" "ogg" "mov" "mid" "midi" "wav" "aiff" "flac"))
+    (dired-rainbow-define image "#f66d9b" ("tiff" "tif" "cdr" "gif" "ico" "jpeg" "jpg" "png" "psd" "eps" "svg"))
+    (dired-rainbow-define log "#c17d11" ("log"))
+    (dired-rainbow-define shell "#f6993f" ("awk" "bash" "bat" "sed" "sh" "zsh" "vim"))
+    (dired-rainbow-define interpreted "#38c172" ("py" "ipynb" "rb" "pl" "t" "msql" "mysql" "pgsql" "sql" "r" "clj" "cljs" "scala" "js"))
+    (dired-rainbow-define compiled "#4dc0b5" ("asm" "cl" "lisp" "el" "c" "h" "c++" "h++" "hpp" "hxx" "m" "cc" "cs" "cp" "cpp" "go" "f" "for" "ftn" "f90" "f95" "f03" "f08" "s" "rs" "hi" "hs" "pyc" ".java"))
+    (dired-rainbow-define executable "#8cc4ff" ("exe" "msi"))
+    (dired-rainbow-define compressed "#51d88a" ("7z" "zip" "bz2" "tgz" "txz" "gz" "xz" "z" "Z" "jar" "war" "ear" "rar" "sar" "xpi" "apk" "xz" "tar"))
+    (dired-rainbow-define packaged "#faad63" ("deb" "rpm" "apk" "jad" "jar" "cab" "pak" "pk3" "vdf" "vpk" "bsp"))
+    (dired-rainbow-define encrypted "#ffed4a" ("gpg" "pgp" "asc" "bfe" "enc" "signature" "sig" "p12" "pem"))
+    (dired-rainbow-define fonts "#6cb2eb" ("afm" "fon" "fnt" "pfb" "pfm" "ttf" "otf"))
+    (dired-rainbow-define partition "#e3342f" ("dmg" "iso" "bin" "nrg" "qcow" "toast" "vcd" "vmdk" "bak"))
+    (dired-rainbow-define vc "#0074d9" ("git" "gitignore" "gitattributes" "gitmodules"))
+    (dired-rainbow-define-chmod executable-unix "#38c172" "-.*x.*")))
+
+;; Use eim-peep-dired package for previewing files in Dired
+(use-package eim-peep-dired
+  :defer t ; don't access `dired-mode-map' until `eim-peep-dired' is loaded
+  :elpaca (:host github :repo "mac230/eim-peep-dired")
+  :config
+  (setq eim-peep-dired-cleanup-eagerly nil)
+  (setq eim-peep-dired-cleanup-on-disable t))
+
+#+END_SRC
+
+** Help Settings
+
+This Emacs Lisp script is for loading and configuring the 'helpful' package, which provides enhanced help buffers in Emacs. The script ensures that the 'helpful' package is installed if it's not already present. It defines commands provided by the package such as helpful-callable, helpful-variable, helpful-command, and helpful-key. In its custom configuration options, it sets counsel's describe function to use helpful-callable and counsel's describe variable to use helpful-variable.
+
+#+BEGIN_SRC emacs-lisp
+
+;; Use helpful package for enhanced help buffers in Emacs
+(use-package helpful
+  :ensure t  ;; Ensure the package is installed if not present
+  :commands (helpful-callable helpful-variable helpful-command helpful-key)  ;; Define commands provided by the package
+  :custom
+  (counsel-describe-function-function #'helpful-callable)  ;; Set counsel's describe function to use helpful-callable
+  (counsel-describe-variable-function #'helpful-variable))  ;; Set counsel's describe variable to use helpful-variable
+
+#+END_SRC
+
+** Neotree Settings
+
+This Emacs Lisp script is for loading and configuring the 'neotree' package, which provides a tree-like file explorer in Emacs. The script ensures that the 'neotree' package is installed if it's not already present. In its configuration options, it enables smart open feature, shows hidden files, sets the width of NeoTree window, does not fix the size of NeoTree window, sets the theme based on whether display supports graphics or not, prevents font cache compacting, and sets an action when switching projects with Projectile. It also includes a hook to truncate long file names in neotree.
+
+| COMMAND        | DESCRIPTION                   | KEYBINDING |
+|----------------+-------------------------------+------------|
+| neotree-toggle | /Toggle neotree/                | SPC t n    |
+| neotree- dir   | /Open directory in neotree/     | SPC d n    |
+
+#+BEGIN_SRC emacs-lisp
+
+;; Use neotree package for tree-like file explorer
+(use-package neotree
+  :ensure t  ;; Ensure the package is installed if not present
+  :config
+  (setq neo-smart-open t)  ;; Enable smart open feature
+  (setq neo-show-hidden-files t)  ;; Show hidden files
+  (setq neo-window-width 55)  ;; Set width of NeoTree window
+  (setq neo-window-fixed-size nil)  ;; Do not fix size of NeoTree window
+  (setq neo-theme (if (display-graphic-p) 'icons 'arrow))  ;; Set theme based on whether display supports graphics or not
+  (setq inhibit-compacting-font-caches t)  ;; Prevent font cache compacting
+  (setq projectile-switch-project-action 'neotree-projectile-action)  ;; Set action when switching projects with Projectile
+  
+  ;; Truncate long file names in neotree
+  (add-hook 'neo-after-create-hook
+            #'(lambda (_)
+                (with-current-buffer (get-buffer neo-buffer-name)
+                  (setq truncate-lines t)
+                  (setq word-wrap nil)
+                  (make-local-variable 'auto-hscroll-mode)
+                  (setq auto-hscroll-mode nil)))))
+
+#+END_SRC
+
+** Icon Settings
+
+The Emacs Lisp script loads and configures several packages that provide icon support in Emacs. The 'nerd-icons' package provides icons with the font family set to "Symbols Nerd Font Mono". The 'nerd-icons-dired' package displays icons in Dired mode, enabling nerd-icons-dired-mode in dired-mode. The 'treemacs-nerd-icons' package shows icons in Treemacs by loading the nerd-icons theme. The 'nerd-icons-ibuffer' package displays icons in Ibuffer mode, enabling nerd-icons-ibuffer-mode in ibuffer-mode with various configurations. The 'nerd-icons-completion' package offers icon completion by enabling nerd-icons-completion-mode. The 'all-the-icons' package provides icons in Emacs, only loading if display supports graphics and installs fonts if not present. The 'all-the-icons-dired' package displays icons in Dired mode, enabling all-the-icons-dired-mode in dired-mode without using monochrome icons. Lastly, the 'all-the-icons-completion' package provides icon completion by enabling all-the-icons-completion-mode and setting up marginalia with all-the-icons.
+
+#+BEGIN_SRC emacs-lisp
+
+;; Use nerd-icons package for icons in Emacs
+(use-package nerd-icons
+  :ensure t  ;; Ensure the package is installed if not present
+  :custom
+  (nerd-icons-font-family "Symbols Nerd Font Mono"))  ;; Set font family for nerd-icons
+
+;; Use nerd-icons-dired package to display icons in Dired mode
+(use-package nerd-icons-dired
+  :ensure t
+  :hook (dired-mode . nerd-icons-dired-mode))  ;; Enable nerd-icons-dired-mode in dired-mode
+
+;; Use treemacs-nerd-icons package to display icons in Treemacs
+(use-package treemacs-nerd-icons
+  :ensure t
+  :config
+  (treemacs-load-theme "nerd-icons"))  ;; Load nerd-icons theme for Treemacs
+
+;; Use nerd-icons-ibuffer package to display icons in Ibuffer mode
+(use-package nerd-icons-ibuffer
+  :ensure t
+  :hook (ibuffer-mode . nerd-icons-ibuffer-mode)  ;; Enable nerd-icons-ibuffer-mode in ibuffer-mode
+  :config
+  (setq nerd-icons-ibuffer-icon t)
+  (setq nerd-icons-ibuffer-color-icon t)
+  (setq nerd-icons-ibuffer-human-readable-size t))
+
+;; Use nerd-icons-completion package for icon completion
+(use-package nerd-icons-completion
+  :ensure t
+  :config
+  (nerd-icons-completion-mode))  ;; Enable nerd-icons-completion-mode
+  
+;; Use all-the-icons package for icons in Emacs
+(use-package all-the-icons
+  :ensure t
+  :if (display-graphic-p)  ;; Only load if display supports graphics
+  :config
+  (unless (find-font (font-spec :family "all-the-icons"))  ;; Install fonts if not present
+    (all-the-icons-install-fonts t)))
+
+;; Use all-the-icons-dired package to display icons in Dired mode
+(use-package all-the-icons-dired
+  :ensure t
+  :config
+  (add-hook 'dired-mode-hook 'all-the-icons-dired-mode)  ;; Enable all-the-icons-dired-mode in dired-mode
+  (setq all-the-icons-dired-monochrome nil))  ;; Do not use monochrome icons
+  
+;; Use all-the-icons-completion package for icon completion
+(use-package all-the-icons-completion
+  :ensure t
+  :config
+  (all-the-icons-completion-mode)  ;; Enable all-the-icons-completion-mode
+  (add-hook 'marginalia-mode-hook #'all-the-icons-completion-marginalia-setup))  ;; Setup marginalia with all-the-icons
+
+#+END_SRC
+
+** Dashboard Settings
+
+The Emacs Lisp script loads and configures several packages that enhance the startup screen, project management, and workspace management in Emacs. The 'dashboard' package provides a pleasant startup screen by setting the initial buffer to be the dashboard, enabling heading and file icons, setting banner title, centering content, specifying items to show on the dashboard, modifying heading icons, and setting up the dashboard at startup. The 'projectile' package is used for project management and is configured to enable Projectile mode. The 'perspective' package is used for workspace management; it suppresses prefix key warning, sets prefix key for Perspective mode, enables Perspective mode, turns on mode string, and sets a file to write to when states are saved. It also groups buffers by persp-name in ibuffer and automatically saves perspective states to file when Emacs exits.
+
+#+BEGIN_SRC emacs-lisp
+
+;; Use dashboard package for a nice startup screen
+(use-package dashboard
+  :ensure t  ;; Ensure the package is installed if not present
+  :init
+  (setq initial-buffer-choice 'dashboard-open)  ;; Set initial buffer to be the dashboard
+  (setq dashboard-set-heading-icons t)  ;; Enable heading icons
+  (setq dashboard-set-file-icons t)  ;; Enable file icons
+  (setq dashboard-banner-logo-title "Emacs Is More Than A Text Editor!")  ;; Set banner title
+  ;;(setq dashboard-startup-banner 'logo) ;; Uncomment to use standard emacs logo as banner
+  (setq dashboard-center-content t)  ;; Center content
+  (setq dashboard-items '((recents . 5)
+                          (agenda . 5 )
+                          (bookmarks . 3)
+                          (projects . 3)
+                          (registers . 3)))  ;; Set items to show in dashboard
+  :custom 
+  (dashboard-modify-heading-icons '((recents . "file-text") (bookmarks . "book")))  ;; Modify heading icons
+  :config
+  (dashboard-setup-startup-hook))  ;; Setup dashboard at startup
+  
+;; Use projectile package for project management
+(use-package projectile
+  :ensure t
+  :config
+  (projectile-mode))  ;; Enable Projectile mode
+  
+;; Use perspective package for workspace management
+(use-package perspective
+  :ensure t
+  :custom
+  (persp-suppress-no-prefix-key-warning t)  ;; Suppress prefix key warning
+  (persp-mode-prefix-key (kbd "C-c M-p"))  ;; Set prefix key for Perspective mode
+  :config
+  (persp-mode)  ;; Enable Perspective mode
+  (persp-turn-on-modestring)  ;; Turn on mode string
+  ;; Sets a file to write to when we save states
+  (setq persp-state-default-file "~/.emacs.d/sessions"))
+
+;; This will group buffers by persp-name in ibuffer.
+(add-hook 'ibuffer-hook
+  (lambda ()
+    (persp-ibuffer-set-filter-groups)
+    (unless (eq ibuffer-sorting-mode 'alphabetic)
+      (ibuffer-do-sort-by-alphabetic))))
+
+;; Automatically save perspective states to file when Emacs exits.
+(add-hook 'kill-emacs-hook #'persp-state-save)
+
+#+END_SRC
+
+** Which Key Settings
+
+This Emacs Lisp script is for loading and configuring the 'which-key' package, which displays available keybindings in a popup. The script ensures that the 'which-key' package is installed if it's not already present. It enables 'which-key' mode and sets various configuration options such as the location of the which-key window, sorting order of keys, column padding, minimum display lines, side window slot, maximum height of the side window, idle delay before the which-key popup appears, maximum description length, and separator string.
+
+#+BEGIN_SRC emacs-lisp
+
+;; Use which-key package to display available keybindings in popup
+(use-package which-key
+  :ensure t  ;; Ensure the package is installed if not present
+  :init
+  (which-key-mode 1)  ;; Enable which-key mode
+  :diminish
+  :config
+  (setq which-key-side-window-location 'bottom)  ;; Set location of which-key window
+  (setq which-key-sort-order #'which-key-key-order-alpha)  ;; Sort keys alphabetically
+  (setq which-key-allow-imprecise-window-fit nil)  ;; Do not allow imprecise window fit
+  (setq which-key-sort-uppercase-first nil)  ;; Do not sort uppercase keys first
+  (setq which-key-add-column-padding 1)  ;; Add column padding
+  (setq which-key-max-display-columns nil)  ;; Do not limit max display columns
+  (setq which-key-min-display-lines 6)  ;; Set min display lines
+  (setq which-key-side-window-slot -10)  ;; Set side window slot
+  (setq which-key-side-window-max-height 0.25)  ;; Set max height of side window
+  (setq which-key-idle-delay 0.8)  ;; Set idle delay before which-key popup appears
+  (setq which-key-max-description-length 25)  ;; Set max description length
+  (setq which-key-separator " → "))  ;; Set separator string
+
+#+END_SRC
+
+* Keybindings
+
+** Evil Mode Settings
+
+The Emacs Lisp script loads and configures several packages that provide Vim emulation, additional keybindings, better undo/redo functionality, LaTeX support, surround functionality, and commenting/uncommenting lines in Emacs. The 'evil' package provides Vim emulation with configurations for not loading default keybindings, setting the undo system to 'undo-fu', enabling Evil mode, and setting initial states of messages buffer and dashboard to normal. The 'evil-collection' package offers additional Evil keybindings, loaded after Evil, adds help mode to the evil collection list, and initializes evil-collection. The 'undo-fu' package enhances undo/redo functionality. The 'evil-tex' package provides LaTeX support in Evil, loaded after AUCTeX and Evil, and enables evil-tex mode in LaTeX mode. The 'evil-surround' package provides surround functionality in Evil by enabling global Evil Surround mode. The 'evil-nerd-commenter' package allows for commenting/uncommenting lines in Evil by binding M-/ to comment or uncomment lines. Additionally, keys are unmapped in 'evil-maps so that Org mode's link following works correctly.
+
+#+BEGIN_SRC emacs-lisp
+
+;; Use evil package for Vim emulation in Emacs
+(use-package evil
+  :ensure t  ;; Ensure the package is installed if not present
+  :init
+  (setq evil-want-keybinding nil)  ;; Do not load default keybindings
+  (setq evil-undo-system 'undo-redo)  ;; Adds vim-like C-r redo functionality
+  (setq evil-undo-system 'undo-fu)  ;; Set undo system to undo-fu
+  :config
+  (evil-mode 1)  ;; Enable Evil mode
+  (evil-set-initial-state 'messages-buffer-mode 'normal)  ;; Set initial state of messages buffer to normal
+  (evil-set-initial-state 'dashboard-mode 'normal))  ;; Set initial state of dashboard to normal
+  
+;; Use evil-collection package for additional Evil keybindings
+(use-package evil-collection
+  :ensure t
+  :after evil  ;; Load after Evil
+  :config
+  (add-to-list 'evil-collection-mode-list 'help)  ;; Add help mode to evil collection list
+  (evil-collection-init))  ;; Initialize evil-collection
+
+;; Use undo-fu package for better undo/redo functionality
+(use-package undo-fu
+  :ensure t)
+
+;; Unmap keys in 'evil-maps so that Org mode's link following works correctly
+(with-eval-after-load 'evil-maps
+  (define-key evil-motion-state-map (kbd "SPC") nil)
+  (define-key evil-motion-state-map (kbd "RET") nil)
+  (define-key evil-motion-state-map (kbd "TAB") nil))
+
+;; Use evil-tex package for LaTeX support in Evil
+(use-package evil-tex
+  :ensure t
+  :after auctex  ;; Load after AUCTeX
+  :after evil  ;; Load after Evil
+  :config
+  (add-hook 'LaTeX-mode-hook #'evil-tex-mode))  ;; Enable evil-tex mode in LaTeX mode
+
+;; Use evil-surround package for surround functionality in Evil
+(use-package evil-surround
+  :ensure t
+  :config
+  (global-evil-surround-mode 1))  ;; Enable global Evil Surround mode
+
+;; Use evil-nerd-commenter package for commenting/uncommenting lines in Evil
+(use-package evil-nerd-commenter
+  :ensure t
+  :bind ("M-/" . evilnc-comment-or-uncomment-lines))  ;; Bind M-/ to comment or uncomment lines
+
+#+END_SRC
+
+** General Keybinding Settings
+
+This code block integrates and configures the '*general*' package, which provides a convenient way to define keybindings in Emacs. It sets up 'SPC' as the global leader key that can be used to trigger various commands.
+ - The first set of bindings includes general commands like opening the command prompt with 'counsel-M-x', finding files, listing perspective keybindings, commenting lines, and more.
+ - The second set of bindings is related to buffer and bookmark management. These include switching to a different buffer, creating an indirect buffer copy in a split or new window, deleting bookmarks, killing buffers, setting bookmarks, navigating between buffers, reloading buffers, renaming buffers, saving buffers, and saving current bookmarks to the bookmark file.
+ - The third set of bindings is related to Dired, Emacs's built-in file manager. These include opening Dired, jumping to the current directory in Dired, opening a directory in Neotree (a tree explorer), and peeping into files in Dired without leaving the Dired buffer.
+ - The fourth set of bindings is for evaluating Elisp expressions and interacting with Eshell. These include evaluating the entire buffer or defun at point, evaluating an arbitrary expression, viewing Eshell history, reloading the current page in EWW (Emacs Web Wowser), and more.
+ - The fifth set of bindings is for file management. These include opening specific configuration files, searching for strings in files or the current file, jumping to a file below the current directory, locating a file, finding recent files, editing files as root, and more.
+ - The sixth set of bindings is related to Git operations via Magit, a Git interface for Emacs. These include dispatching Magit commands, checking out branches, creating commits and fixup commits, cloning repositories, showing commits, finding files in the repository, fetching updates from the remote repository, viewing the status of the repository, initializing new repositories, logging buffer changes, reverting files, staging and unstaging files, and traveling back in time with git-timemachine.
+ - The seventh set of bindings provides quick access to various help and documentation resources in Emacs. These include displaying apropos information, describing bindings, characters, functions, faces, input methods, keys, language environments, modes, variables, and commands, viewing echo area messages, lossage (recent keystrokes and commands), GNU Project description, Info documents, and more. It also includes reloading the Emacs configuration file and loading themes.
+ - The eighth set of bindings is related to Org mode, a powerful tool for note-taking and project management in Emacs. These include accessing the agenda view, exporting documents, toggling items, managing TODOs, tangling source code blocks, and more.
+ - The ninth set of bindings provides commands for working with tables in Org mode, such as inserting horizontal lines.
+ - The tenth set of bindings allows you to insert timestamps into your Org documents.
+ - The eleventh set of bindings includes commands for opening various tools or views like the dashboard, new frames, and selecting frames by name.
+ - The twelvth set of bindings gives access to Projectile's command map, which already has many useful keybindings defined for project navigation and manipulation.
+ - The thirteenth set of bindings is for searching through dictionaries, man pages, TLDR docs, and woman pages.
+ - The fifteenth set of bindings provides toggles for various modes and features like Eshell, Flycheck, line numbers display, Neotree file viewer, Org mode, Rainbow mode, truncated lines, and VTerm.
+ - The last set of bindings is for window management. These include closing, creating, splitting windows horizontally or vertically, moving between windows, and moving buffers within windows.
+
+These configurations aim to provide quick access to frequently used commands and enhance productivity by reducing the number of keystrokes needed for common tasks.
+
+#+BEGIN_SRC emacs-lisp
+
+;; Use general package for convenient keybinding in Emacs
+(use-package general
+  :ensure t  ;; Ensure the package is installed if not present
+  :config
+  (general-evil-setup)  ;; Setup general to work with Evil
+  
+  ;; Set up 'SPC' as the global leader key
+  (general-create-definer ACH/leader-keys
+    :states '(normal insert visual emacs)  ;; Define states where these bindings are active
+    :keymaps 'override  ;; Override all other keymaps
+    :prefix "SPC"  ;; Set leader key
+    :global-prefix "M-SPC")  ;; Access leader key in insert mode
+
+  ;; Define leader keybindings
+  (ACH/leader-keys
+    "SPC" '(counsel-M-x :wk "Counsel M-x")  ;; Bind SPC SPC to counsel-M-x
+    "." '(find-file :wk "Find file")  ;; Bind . to find-file
+    "=" '(perspective-map :wk "Perspective")  ;; Lists all the perspective keybindings
+    "TAB TAB" '(comment-line :wk "Comment lines")  ;; Bind TAB TAB to comment-line
+    "u" '(universal-argument :wk "Universal argument"))  ;; Bind u to universal-argument
+  
+  ;; Define leader keybindings for bookmarks/buffers
+  (ACH/leader-keys
+    "b" '(:ignore t :wk "Bookmarks/Buffers")
+    "b b" '(switch-to-buffer :wk "Switch to buffer")
+    "b c" '(clone-indirect-buffer :wk "Create indirect buffer copy in a split")
+    "b C" '(clone-indirect-buffer-other-window :wk "Clone indirect buffer in new window")
+    "b d" '(bookmark-delete :wk "Delete bookmark")
+    "b i" '(ibuffer :wk "Ibuffer")
+    "b k" '(kill-current-buffer :wk "Kill current buffer")
+    "b K" '(kill-some-buffers :wk "Kill multiple buffers")
+    "b l" '(list-bookmarks :wk "List bookmarks")
+    "b m" '(bookmark-set :wk "Set bookmark")
+    "b n" '(next-buffer :wk "Next buffer")
+    "b p" '(previous-buffer :wk "Previous buffer")
+    "b r" '(revert-buffer :wk "Reload buffer")
+    "b R" '(rename-buffer :wk "Rename buffer")
+    "b s" '(basic-save-buffer :wk "Save buffer")
+    "b S" '(save-some-buffers :wk "Save multiple buffers")
+    "b w" '(bookmark-save :wk "Save current bookmarks to bookmark file"))
+
+  ;; Define leader keybindings for Dired
+  (ACH/leader-keys
+    "d" '(:ignore t :wk "Dired")
+    "d d" '(dired :wk "Open dired")
+    "d j" '(dired-jump :wk "Dired jump to current")
+    "d n" '(neotree-dir :wk "Open directory in neotree")
+    "d p" '(peep-dired :wk "Peep-dired"))
+
+  ;; Define leader keybindings for Eshell/Evaluate
+  (ACH/leader-keys
+    "e" '(:ignore t :wk "Eshell/Evaluate")
+    "e b" '(eval-buffer :wk "Evaluate elisp in buffer")
+    "e d" '(eval-defun :wk "Evaluate defun containing or after point")
+    "e e" '(eval-expression :wk "Evaluate and elisp expression")
+    "e h" '(counsel-esh-history :which-key "Eshell history")
+    "e l" '(eval-last-sexp :wk "Evaluate elisp expression before point")
+    "e r" '(eval-region :wk "Evaluate elisp in region")
+    "e R" '(eww-reload :which-key "Reload current page in EWW")
+    "e s" '(eshell :which-key "Eshell")
+    "e w" '(eww :which-key "EWW emacs web browser"))
+  
+  ;; Define leader keybindings for files
+  (ACH/leader-keys
+    "f" '(:ignore t :wk "Files")
+    "f c" '((lambda () (interactive)
+              (find-file "~/.emacs.d/emacs_config.org"))
+            :wk "Open emacs emacs_config.org")
+    "f e" '((lambda () (interactive)
+              (dired "~/.emacs.d/"))
+            :wk "Open user-emacs-directory in dired")
+    "f d" '(find-grep-dired :wk "Search for string in files in DIR")
+    "f g" '(counsel-grep-or-swiper :wk "Search for string current file")
+    "f i" '((lambda () (interactive)
+              (find-file "~/.emacs.d/init.el"))
+            :wk "Open emacs init.el")
+    "f j" '(counsel-file-jump :wk "Jump to a file below current directory")
+    "f l" '(counsel-locate :wk "Locate a file")
+    "f r" '(counsel-recentf :wk "Find recent files")
+    "f u" '(sudo-edit-find-file :wk "Sudo find file")
+    "f U" '(sudo-edit :wk "Sudo edit file"))
+
+  ;; Define leader keybindings for Git
+  (ACH/leader-keys
+    "g" '(:ignore t :wk "Git")
+    "g /" '(magit-displatch :wk "Magit dispatch")
+    "g ." '(magit-file-displatch :wk "Magit file dispatch")
+    "g b" '(magit-branch-checkout :wk "Switch branch")
+    "g c" '(:ignore t :wk "Create")
+    "g c b" '(magit-branch-and-checkout :wk "Create branch and checkout")
+    "g c c" '(magit-commit-create :wk "Create commit")
+    "g c f" '(magit-commit-fixup :wk "Create fixup commit")
+    "g C" '(magit-clone :wk "Clone repo")
+    "g f" '(:ignore t :wk "Find")
+    "g f c" '(magit-show-commit :wk "Show commit")
+    "g f f" '(magit-find-file :wk "Magit find file")
+    "g f g" '(magit-find-git-config-file :wk "Find gitconfig file")
+    "g F" '(magit-fetch :wk "Git fetch")
+    "g g" '(magit-status :wk "Magit status")
+    "g i" '(magit-init :wk "Initialize git repo")
+    "g l" '(magit-log-buffer-file :wk "Magit buffer log")
+    "g r" '(vc-revert :wk "Git revert file")
+    "g s" '(magit-stage-file :wk "Git stage file")
+    "g t" '(git-timemachine :wk "Git time machine")
+    "g u" '(magit-stage-file :wk "Git unstage file"))
+
+  ;; Define leader keybindings for Help
+  (ACH/leader-keys
+    "h" '(:ignore t :wk "Help")
+    "h a" '(counsel-apropos :wk "Apropos")
+    "h b" '(describe-bindings :wk "Describe bindings")
+    "h c" '(describe-char :wk "Describe character under cursor")
+    "h d" '(:ignore t :wk "Emacs documentation")
+    "h d a" '(about-emacs :wk "About Emacs")
+    "h d d" '(view-emacs-debugging :wk "View Emacs debugging")
+    "h d f" '(view-emacs-FAQ :wk "View Emacs FAQ")
+    "h d m" '(info-emacs-manual :wk "The Emacs manual")
+    "h d n" '(view-emacs-news :wk "View Emacs news")
+    "h d o" '(describe-distribution :wk "How to obtain Emacs")
+    "h d p" '(view-emacs-problems :wk "View Emacs problems")
+    "h d t" '(view-emacs-todo :wk "View Emacs todo")
+    "h d w" '(describe-no-warranty :wk "Describe no warranty")
+    "h e" '(view-echo-area-messages :wk "View echo area messages")
+    "h f" '(describe-function :wk "Describe function")
+    "h F" '(describe-face :wk "Describe face")
+    "h g" '(describe-gnu-project :wk "Describe GNU Project")
+    "h i" '(info :wk "Info")
+    "h I" '(describe-input-method :wk "Describe input method")
+    "h k" '(describe-key :wk "Describe key")
+    "h l" '(view-lossage :wk "Display recent keystrokes and the commands run")
+    "h L" '(describe-language-environment :wk "Describe language environment")
+    "h m" '(describe-mode :wk "Describe mode")
+    "h r" '(:ignore t :wk "Reload")
+    "h r r" '((lambda () (interactive) (load-file "~/.emacs.d/init.el")) :wk "Reload emacs config")
+    "h t" '(load-theme :wk "Load theme")
+    "h v" '(describe-variable :wk "Describe variable")
+    "h w" '(where-is :wk "Prints keybinding for command if set")
+    "h x" '(describe-command :wk "Display full documentation for command"))
+  
+  ;; Define leader keybindings for Org mode
+  (ACH/leader-keys
+    "m" '(:ignore t :wk "Org")
+    "m a" '(org-agenda :wk "Org agenda")
+    "m e" '(org-export-dispatch :wk "Org export dispatch")
+    "m i" '(org-toggle-item :wk "Org toggle item")
+    "m t" '(org-todo :wk "Org todo")
+    "m B" '(org-babel-tangle :wk "Org babel tangle")
+    "m T" '(org-todo-list :wk "Org todo list"))
+
+  ;; Define leader keybindings for NeoTree
+  (ACH/leader-keys
+    "n" '(:ignore t :wk "NeoTree")
+    "n r f" '(neotree-refresh :wk "NeoTree refresh")
+    "n c e" '(neotree-create-mode :wk "NeoTree create file/directory")
+    "n d n" '(neotree-delete-node :wk "NeoTree delete current node")
+    "n r n" '(neotree-rename-node :wk "NeoTree rename current node"))
+
+  ;; Define leader keybindings for Tables in Org mode
+  (ACH/leader-keys
+    "m b" '(:ignore t :wk "Tables")
+    "m b -" '(org-table-insert-hline :wk "Insert hline in table"))
+
+  ;; Define leader keybindings for Date/deadline in Org mode
+  (ACH/leader-keys
+    "m d" '(:ignore t :wk "Date/deadline")
+    "m d t" '(org-time-stamp :wk "Org time stamp"))
+
+  ;; Define leader keybindings for Open
+  (ACH/leader-keys
+    "o" '(:ignore t :wk "Open")
+    "o d" '(dashboard-open :wk "Dashboard")
+    "o f" '(make-frame :wk "Open buffer in new frame")
+    "o F" '(select-frame-by-name :wk "Select frame by name"))
+
+  ;; Define leader keybindings for Projectile
+  (ACH/leader-keys
+    "p" '(projectile-command-map :wk "Projectile"))
+
+  ;; Define leader keybindings for Search
+  (ACH/leader-keys
+    "s" '(:ignore t :wk "Search")
+    "s d" '(dictionary-search :wk "Search dictionary")
+    "s m" '(man :wk "Man pages")
+    "s t" '(tldr :wk "Lookup TLDR docs for a command")
+    "s w" '(woman :wk "Similar to man but doesn't require man"))
+
+  ;; Define leader keybindings for Toggle
+  (ACH/leader-keys
+    "t" '(:ignore t :wk "Toggle")
+    "t e" '(eshell-toggle :wk "Toggle eshell")
+    "t f" '(flycheck-mode :wk "Toggle flycheck")
+    "t l" '(display-line-numbers-mode :wk "Toggle line numbers")
+    "t n" '(neotree-toggle :wk "Toggle neotree file viewer")
+    "t o" '(org-mode :wk "Toggle org mode")
+    "t r" '(rainbow-mode :wk "Toggle rainbow mode")
+    "t t" '(visual-line-mode :wk "Toggle truncated lines")
+    "t v" '(vterm-toggle :wk "Toggle vterm"))
+
+  ;; Define leader keybindings for Windows
+  (ACH/leader-keys
+    "w" '(:ignore t :wk "Windows")
+    ;; Window splits
+    "w c" '(evil-window-delete :wk "Close window")
+    "w n" '(evil-window-new :wk "New window")
+    "w s" '(evil-window-split :wk "Horizontal split window")
+    "w v" '(evil-window-vsplit :wk "Vertical split window")
+    ;; Window motions
+    "w h" '(evil-window-left :wk "Window left")
+    "w j" '(evil-window-down :wk "Window down")
+    "w k" '(evil-window-up :wk "Window up")
+    "w l" '(evil-window-right :wk "Window right")
+    "w w" '(evil-window-next :wk "Goto next window")
+    ;; Move Windows
+    "w H" '(buf-move-left :wk "Buffer move left")
+    "w J" '(buf-move-down :wk "Buffer move down")
+    "w K" '(buf-move-up :wk "Buffer move up")
+    "w L" '(buf-move-right :wk "Buffer move right")))  
+
+#+END_SRC
+
+* Terminal Frameworks
+
+** Vterm Settings
+
+This Emacs Lisp script configures the vterm package, providing a terminal emulator within Emacs, and the vterm-toggle package for toggling vterm windows. vterm is set up to recognize custom shell prompts, launch the zsh shell, and limit scrollback. Meanwhile, vterm-toggle is configured to disable fullscreen mode, employ a 'project' scope, and modify buffer display rules, ensuring vterm buffers appear at the bottom of the screen. These configurations optimize the terminal emulation experience in Emacs.
+
+#+BEGIN_SRC emacs-lisp
+
+;; Use vterm package
+(use-package vterm
+  :ensure t
+  :commands vterm
+  :config
+  ;; Set this to match your custom shell prompt
+  (setq term-prompt-regexp "^[^#$%>\n]*[#$%>] *")     
+  ;; Set this to customize the shell to launch
+  (setq vterm-shell "/bin/zsh")                       
+  ;; Set maximum scrollback limit in terminal buffer
+  (setq vterm-max-scrollback 10000))
+
+;; Use vterm-toggle package after vterm
+(use-package vterm-toggle
+  :ensure t
+  :after vterm
+  :config
+  ;; Disable fullscreen mode
+  (setq vterm-toggle-fullscreen-p nil)
+  ;; Set scope to 'project'
+  (setq vterm-toggle-scope 'project)
+  ;; Add rule to display buffer alist for displaying vterm buffers at bottom of screen
+  (add-to-list 'display-buffer-alist '((lambda (buffer-or-name _)
+                                         (let ((buffer (get-buffer buffer-or-name)))
+                                           (with-current-buffer buffer
+                                             (or (equal major-mode 'vterm-mode)
+                                                 (string-prefix-p vterm-buffer-name
+                                                                   (buffer-name buffer))))))
+                                       (display-buffer-reuse-window display-buffer-at-bottom)
+                                       (reusable-frames . visible)
+                                       (window-height . 0.4))))
+
+#+END_SRC
+
+** Eshell Settings
+
+This Emacs Lisp script configures two packages: 'eshell-toggle' and 'eshell-syntax-highlighting.' The 'eshell-toggle' package is set up to toggle Eshell windows, with options for size fraction, projectile root usage, and Eshell initialization. It avoids executing any command when toggling Eshell. The 'eshell-syntax-highlighting' package adds syntax highlighting to Eshell, activated after eshell-mode. Configuration includes enabling global syntax highlighting, using a powerline theme for the git prompt, specifying history size and maximum lines, managing duplicates in the history, and adjusting scrolling behavior and buffer handling. Additionally, the script disables company mode in Eshell, adds a hook for disabling company mode when entering Eshell, and enhances tab completion in Eshell through setup functions and a hook added to eshell-mode-hook.
+
+#+BEGIN_SRC emacs-lisp
+
+;; Use eshell-toggle package
+(use-package eshell-toggle
+  :ensure t
+  :custom
+  ;; Set the size fraction for eshell-toggle
+  (eshell-toggle-size-fraction 4)
+  ;; Enable use of projectile root in eshell-toggle
+  (eshell-toggle-use-projectile-root t)
+  ;; Uncomment to initialize ansi-term in eshell-toggle
+  ;;(eshell-toggle-init-function #'eshell-toggle-init-ansi-term)
+  ;; Initialize eshell in eshell-toggle
+  (eshell-toggle-init-function #'eshell-toggle-init-eshell)
+  ;; Do not run any command when toggling eshell
+  (eshell-toggle-run-command nil))
+
+;; Use eshell-syntax-highlighting package after eshell-mode
+(use-package eshell-syntax-highlighting
+  :after eshell-mode
+  :ensure t
+  :config
+  ;; Enable global mode for eshell syntax highlighting
+  (eshell-syntax-highlighting-global-mode +1)
+  ;; Use powerline theme for git prompt in eshell
+  (eshell-git-prompt-use-theme 'powerline)
+  ;; Set history size for eshell
+  (setq eshell-history-size 5000)
+  ;; Set maximum lines for eshell buffer
+  (setq eshell-buffer-maximum-lines 5000)
+  ;; Ignore duplicates in eshell history
+  (setq eshell-hist-ignoredups t)
+  ;; Scroll to bottom on input in eshell
+  (setq eshell-scroll-to-bottom-on-input t)
+  ;; Destroy buffer when process dies in eshell
+  (setq eshell-destroy-buffer-when-process-dies t)
+  ;; List of visual commands for eshell
+  (setq eshell-visual-commands'("bash" "fish" "htop" "ssh" "top" "zsh")))
+
+;; Function to disable company mode in eshell
+(defun my-disable-company-in-eshell ()
+  (company-mode -1))
+  
+;; Add hook to disable company mode when entering eshell mode
+(add-hook 'eshell-mode-hook 'my-disable-company-in-eshell)
+
+;; Configure eshell for better tab completion
+(defun pcmpl-eshell-setup ()
+  "Setup `pcmpl-eshell'. This must be run from `eshell-mode-hook'."
+  (when (and (boundp 'eshell-buffer-name)
+             eshell-buffer-name)
+    (unless (file-remote-p default-directory)
+      ;; Make sure our setup function has been called
+      (unless (advice-function-member-p #'pcmpl-eshell-setup eshell-dynamic-complete-functions)
+        (add-hook 'eshell-dynamic-complete-functions #'pcmpl-eshell-setup t))
+      ;; If pcomplete was not active, we activate it now.
+      ;; We also remove the hook, as it is no longer necessary.
+      (unless pcomplete-active-p
+        (remove-hook 'eshell-dynamic-complete-functions #'pcmpl-eshell-setup)
+        (setq-local pcomplete-cycle-completions nil)
+        (let ((buf eshell-buffer-name))
+          (with-temp-buffer
+            (shell-command (format "ls -aF %s" default-directory) t)
+            (goto-char (point-min))
+            (while (re-search-forward "^\\([^[:space:]]+\\)$" nil t)
+              (ignore-errors
+                (pcomplete-here*
+                 (list
+                  (replace-regexp-in-string "/$" "" (match-string-no-properties 0)))))))
+          (if (called-interactively-p 'any)
+              (message "Pcomplete shell setup done.")
+            (eshell-buffer-name)))))))
+
+(add-hook 'eshell-mode-hook #'pcmpl-eshell-setup)
+
+#+END_SRC
+
+* Completion Frameworks
+
+** Vertico Mode Settings
+
+The provided Emacs Lisp script enhances the user interface and functionality of Emacs through various package configurations. It begins by setting up the 'vertico' package for minibuffer completion, customizing grid separators, lookahead, display actions, multiform categories, and commands. Additionally, it defines functions to toggle between flat and reverse modes in 'vertico' multiform, embark on a candidate using quick keys, and provides a workaround for tramp hostname completions. Next, it enables 'savehist-mode' to store minibuffer history across sessions. The script then configures the 'marginalia' package, adjusting options related to minibuffer annotations and enabling 'marginalia' mode. Afterward, it configures the 'embark' package, binding keys for 'embark act' and related bindings, replacing the key help with a completing-read interface. Finally, it uses the 'orderless' package to set completion styles, clear default completion categories, and override completion categories for files. These configurations collectively improve the usability and efficiency of Emacs.
+
+#+BEGIN_SRC emacs-lisp
+
+;; Use vertico package
+(use-package vertico
+  :demand t
+  :elpaca
+  ;; Special recipe to load extensions conveniently
+  (vertico  :files (:defaults "extensions/*") 
+            :includes (vertico-indexed
+                       vertico-flat
+                       vertico-grid
+                       vertico-mouse
+                       vertico-quick
+                       vertico-buffer
+                       vertico-repeat
+                       vertico-reverse
+                       vertico-directory
+                       vertico-multiform
+                       vertico-unobtrusive
+                       vertico-suspend))
+  :custom
+  ;; Set separator for vertico grid
+  (vertico-grid-separator "  ")
+  ;; Set lookahead for vertico grid
+  (vertico-grid-lookahead 50)
+  ;; Set display action for vertico buffer
+  (vertico-buffer-display-action '(display-buffer-reuse-window))
+  ;; Set categories for multiform in vertico
+  (vertico-multiform-categories
+   '((file reverse)
+     (consult-grep buffer)
+     (consult-location)
+     (imenu buffer)
+     (library reverse indexed)
+     (org-roam-node reverse indexed)
+     (t reverse)))
+  ;; Set commands for multiform in vertico
+  (vertico-multiform-commands
+   '(("flyspell-correct-*" grid reverse)
+     (org-refile grid reverse indexed)
+     (consult-yank-pop indexed)
+     (consult-flycheck)
+     (consult-lsp-diagnostics)))
+
+  :init
+  ;; Function to toggle between flat and reverse in vertico multiform
+  (defun ACH/vertico-multiform-flat-toggle ()
+    "Toggle between flat and reverse."
+    (interactive)
+    (vertico-multiform--display-toggle 'vertico-flat-mode)
+    (if vertico-flat-mode
+        (vertico-multiform--temporary-mode 'vertico-reverse-mode -1)
+      (vertico-multiform--temporary-mode 'vertico-reverse-mode 1)))
+
+  ;; Function to embark on candidate using quick keys in vertico
+  (defun ACH/vertico-quick-embark (&optional arg)
+    "Embark on candidate using quick keys."
+    (interactive)
+    (when (vertico-quick-jump)
+      (embark-act arg)))
+
+  ;; Workaround for problem with `tramp' hostname completions. This overrides
+  ;; the completion style specifically for remote files! See
+  ;; https://github.com/minad/vertico#tramp-hostname-completion
+  (defun ACH/basic-remote-try-completion (string table pred point)
+    (and (vertico--remote-p string)
+         (completion-basic-try-completion string table pred point)))
+  (defun ACH/basic-remote-all-completions (string table pred point)
+    (and (vertico--remote-p string)
+         (completion-basic-all-completions string table pred point)))
+  (add-to-list 'completion-styles-alist
+               '(basic-remote           ; Name of `completion-style'
+                 ACH/basic-remote-try-completion ACH/basic-remote-all-completions nil))
+
+  :config
+  ;; Enable vertico mode and multiform mode
+  (vertico-mode)
+  (vertico-multiform-mode)
+  ;; Set resize, cycle and ignore case options for vertico
+  (setq vertico-resize t)
+  (setq vertico-cycle t)
+  (setq read-file-name-completion-ignore-case t)
+  (setq read-buffer-completion-ignore-case t)
+  (setq completion-ignore-case t)
+  ;; Set function for completion in region
+  (setq completion-in-region-function
+        (lambda (&rest args)
+          (apply (if vertico-mode
+                     #'consult-completion-in-region
+                   #'completion--in-region)
+                 args))))
+
+;; Enable savehist mode
+(savehist-mode 1)
+
+;; Use marginalia package after vertico
+(use-package marginalia
+  :after vertico
+  :custom
+  ;; Set max relative age and align options for marginalia
+  (marginalia-max-relative-age 0)
+  (marginalia-align 'right)
+  :config
+  ;; Enable marginalia mode
+  (marginalia-mode))
+
+;; Use embark package
+(use-package embark
+  :bind
+  ;; Bind keys for embark act and bindings
+  (("C-S-a" . embark-act)         ;; pick some comfortable binding
+   ("C-h B" . embark-bindings))   ;; alternative for `describe-bindings'
+  :init
+  ;; Optionally replace the key help with a completing-read interface
+  (setq prefix-help-command #'embark-prefix-help-command))
+
+;; Use orderless package
+(use-package orderless
+  :init
+  ;; Set completion styles for orderless
+  (setq completion-styles '(substring orderless basic))
+  ;; Clear default completion categories
+  (setq completion-category-defaults nil)
+  ;; Override completion categories for files
+  (setq completion-category-overrides '((file (styles partial-completion)))))
+
+#+END_SRC
+
+** Consult Mode Settings
+
+This Emacs Lisp script is dedicated to configuring several packages that enhance various aspects of interactive search, navigation, and code management within Emacs, all built around the 'consult' package as a foundation. It begins with comprehensive 'consult' package customization, enabling preview modes, defining register preview behavior, and optimizing 'xref' functionality. The script then incorporates 'consult-todo' for managing TODO items, 'consult-flycheck' to integrate Flycheck's error list, and 'consult-dir' for improved directory navigation. Together, these configurations significantly augment the user experience in Emacs, facilitating efficient code navigation, error checking, and task management.
+
+#+BEGIN_SRC emacs-lisp
+
+;; Use consult package
+(use-package consult
+  :ensure t
+  :hook
+  ;; Enable consult preview at point mode in completion list mode
+  (completion-list-mode . consult-preview-at-point-mode)
+  :init
+  ;; Set register preview delay and function for consult
+  (setq register-preview-delay 0.5 
+        register-preview-function #'consult-register-format)
+  ;; Override register preview with consult register window
+  (advice-add #'register-preview :override #'consult-register-window)
+  ;; Set xref show functions to use consult-xref
+  (setq xref-show-xrefs-function #'consult-xref 
+        xref-show-definitions-function #'consult-xref))
+
+;; Use consult-todo package
+(use-package consult-todo
+  :ensure t
+  :demand t
+  :elpaca (:host github :repo "liuyinz/consult-todo"))
+
+;; Define narrowing options for consult-todo
+(defconst consult-todo--narrow '( (?t . "TODO")
+                                  (?f . "FIXME")
+                                  (?b . "BUG")
+                                  (?h . "HACK")))
+
+;; Use consult-flycheck package after flycheck
+(use-package consult-flycheck
+  :ensure t
+  :after flycheck
+  :bind (:map flycheck-command-map ("!" . consult-flycheck)))
+
+;; Use consult-dir package for directory navigation features
+(use-package consult-dir
+  :ensure t   ;; Ensure that the package is installed
+  ;; Bind keys to consult-dir commands
+  :bind (
+         ;; Globally bind "C-x C-d" to consult-dir command. This allows you to select a directory from 
+         ;; recently visited directories or bookmarks.
+         ("C-x C-d" . consult-dir)
+         ;; In Vertico context (i.e., when Vertico minibuffer is active), bind "C-x C-d" to consult-dir command.
+         :map vertico-map
+         ("C-x C-d" . consult-dir)
+         ;; In Vertico context, bind "C-x C-j" to consult-dir-jump-file command. This allows you to jump directly 
+         ;; to a file within the selected directory.
+         ("C-x C-j" . consult-dir-jump-file)))
+
+#+END_SRC
+
+* Programming Settings
+
+** Flycheck Settings
+
+This Emacs Lisp script configures the flycheck package, which is used for on-the-fly syntax checking in Emacs. The configuration ensures that the package is installed and diminishes its mode line lighters to reduce clutter. It also enables flycheck mode automatically in all programming modes by adding it to the 'prog-mode-hook'.
+
+#+BEGIN_SRC emacs-lisp
+
+;; Use flycheck package
+(use-package flycheck
+  :ensure t
+  :diminish
+  :init
+  ;; Enable flycheck mode in programming modes
+  (add-hook 'prog-mode-hook #'flycheck-mode))
+
+#+END_SRC
+
+** Highlight TODO Settings
+
+This Emacs Lisp script configures the hl-todo package, which is used for highlighting TODO and similar keywords in comments and strings. The configuration ensures that the package is installed and enables hl-todo mode automatically in org-mode and prog-mode. It also sets punctuation for highlighting and customizes faces (colors and styles) for different keywords such as "TODO", "FIXME", "HACK", "REVIEW", "NOTE", and "DEPRECATED".
+
+#+BEGIN_SRC emacs-lisp
+
+;; Use hl-todo package
+(use-package hl-todo
+  :ensure t
+  :hook 
+  ;; Enable hl-todo mode in org-mode and prog-mode
+  ((org-mode . hl-todo-mode)
+   (prog-mode . hl-todo-mode))
+  :config
+  ;; Set punctuation for highlighting and faces for keywords in hl-todo
+  (setq hl-todo-highlight-punctuation ":"
+        hl-todo-keyword-faces
+        `(("TODO"       warning bold)
+          ("FIXME"      error bold)
+          ("HACK"       font-lock-constant-face bold)
+          ("REVIEW"     font-lock-keyword-face bold)
+          ("NOTE"       success bold)
+          ("DEPRECATED" font-lock-doc-face bold))))
+
+#+END_SRC
+
+** LSP Settings
+
+This Emacs Lisp script configures several packages related to the Language Server Protocol (LSP) to enhance the development experience for various programming languages. It begins by setting up 'lsp-mode,' enabling 'lsp-deferred' in various modes, and defining commands and options. Then, it configures 'lsp-ui,' which provides additional UI elements like sideline diagnostics and documentation popups, with various customization options. For Python development, 'lsp-pyright' is used, integrated into 'python-mode' and configuring the Python executable command. 'lsp-java' is loaded for Java development. Lastly, it ensures the installation of 'consult-lsp' to integrate 'Consult' with 'LSP,' improving code navigation and completion. These configurations collectively enhance the IDE-like features for multiple programming languages in Emacs.
+
+#+BEGIN_SRC emacs-lisp
+
+;; Use lsp-mode package
+(use-package lsp-mode
+  :ensure t
+  :hook 
+  ;; Enable lsp-deferred in various programming modes
+  ((c-mode
+    c++-mode
+    c-or-c++-mode
+    java-mode
+    js-mode
+    js-jsx-mode
+    typescript-mode
+    python-mode
+    web-mode
+    verilog-mode
+    haskell-mode) . lsp-deferred)
+  :commands lsp
+  :config
+  ;; Set various options for lsp-mode
+  (setq lsp-log-io nil
+        lsp-auto-configure t
+        lsp-auto-guess-root t
+        lsp-enable-symbol-highlighting t
+        lsp-enable-on-type-formatting t
+        lsp-signature-auto-activate t
+        lsp-signature-render-documentation t
+        lsp-enable-completion-at-point t
+        lsp-enable-xref t
+        lsp-modeline-code-actions-enable t
+        lsp-modeline-diagnostics-enable t
+        lsp-headerline-breadcrumb-enable t
+        lsp-semantic-tokens-enable t
+        lsp-prefer-flymake t
+        lsp-use-native-json t
+        lsp-enable-indentation t
+        lsp-enable-imenu t
+        lsp-response-timeout 5
+        lsp-restart 'auto-restart
+        lsp-keep-workspace-alive t
+        lsp-eldoc-render-all nil
+        lsp-eldoc-hook nil
+        read-process-output-max (* 1024 1024)
+        lsp-idle-delay 0.5
+        lsp-enable-snippet t
+        lsp-enable-folding t))
+
+;; Use lsp-ui package after lsp-mode
+(use-package lsp-ui
+  :ensure t
+  :hook (lsp-mode . lsp-ui-mode)
+  :config
+  ;; Set various options for lsp-ui
+  (setq lsp-ui-sideline-ignore-duplicate t
+        lsp-ui-doc-enable t
+        lsp-ui-doc-position 'bottom
+        lsp-ui-doc-header t
+        lsp-ui-doc-include-signature t
+        lsp-ui-doc-border (face-foreground 'default)
+        lsp-ui-sideline-delay 0.05
+        lsp-ui-sideline-show-symbol t
+        lsp-ui-sideline-show-hover t
+        lsp-ui-sideline-show-diagnostics t
+        lsp-ui-sideline-show-code-actions t
+        lsp-ui-peek-always-show t
+        lsp-ui-doc-use-childframe t))
+
+;; Use lsp-pyright package in python-mode
+(use-package lsp-pyright
+  :ensure t
+  :hook (python-mode . (lambda () (require 'lsp-pyright)))
+  :init 
+  ;; Set python executable command if python3 is found
+  (when (executable-find "python3") 
+    (setq lsp-pyright-python-executable-cmd "python3")))
+
+;; Use lsp-java package after lsp
+(use-package lsp-java
+  :ensure t
+  :after lsp)
+
+;; Use consult-lsp package
+(use-package consult-lsp
+  :ensure t)
+
+#+END_SRC
+
+** Git Settings
+
+This Emacs Lisp script is dedicated to configuring multiple packages for efficient Git version control within the Emacs environment. It commences with 'magit' configuration, a comprehensive Git user interface, adjusting the path to the Git executable and enabling symlink following. A post-refresh hook is included to update the doom modeline. Subsequently, 'forge' is set up to facilitate seamless interactions with Git forges like GitHub and GitLab from within 'magit.' The script also employs 'git-commit' to enhance Git commit message editing by enabling global git commit mode. Furthermore, it configures 'git-gutter+' to display Git diff information in the gutter, making hunk navigation more convenient, and customizes mode line lighters. Additionally, 'git-gutter-fringe+' extends 'git-gutter+' by adding fringe markers, customizing face colors for different changes. Lastly, it ensures the installation of 'git-timemachine,' enabling the stepping through of historic versions of Git-controlled files, with keymaps normalized and custom keys defined for navigation within 'git-timemachine' mode. These configurations collectively optimize Git version control workflows in Emacs.
+
+#+BEGIN_SRC emacs-lisp
+
+;; Use magit package
+(use-package magit
+  :ensure t
+  :commands magit-status
+  :custom
+  ;; Set git executable path and follow symlinks for magit
+  (magit-git-executable "/opt/homebrew/bin/git")
+  (vc-follow-symlinks t)
+  :config
+  ;; Add post-refresh hook for doom modeline
+  (add-hook 'magit-post-refresh-hook #'doom-modeline-update-vcs-icon))
+
+;; Use forge package after magit
+(use-package forge
+  :ensure t
+  :after magit)
+
+;; Use git-commit package
+(use-package git-commit
+  :ensure t
+  :config
+  ;; Enable global git commit mode
+  (global-git-commit-mode))
+
+;; Use git-gutter+ package
+(use-package git-gutter+
+  :ensure t
+  :diminish
+  ;; Diminish git gutter+ mode to "gg"
+  (git-gutter+-mode . "gg")
+  :init
+  ;; Enable global git gutter+ mode
+  (global-git-gutter+-mode)
+  :config
+  ;; Set various signs for git gutter+
+  (setq git-gutter+-modified-sign "**"
+        git-gutter+-added-sign "++"
+        git-gutter+-deleted-sign "--"
+        git-gutter+-unchanged-sign "//"
+        git-gutter+-separator-sign "|"
+        git-gutter+-hide-gutter nil))
+
+;; Use git-gutter-fringe+ package
+(use-package git-gutter-fringe+
+  :ensure t
+  :config
+  ;; Enable global git gutter+ mode and set face colors
+  (global-git-gutter+-mode)
+  (set-face-background 'git-gutter-fr+-modified "purple")
+  (set-face-foreground 'git-gutter-fr+-modified "green")
+  (set-face-foreground 'git-gutter-fr+-modified "red")
+  (set-face-background 'git-gutter-fr+-modified "blue")
+  (set-face-foreground 'git-gutter-fr+-modified "yellow"))
+
+;; Use git-timemachine package after git-timemachine
+(use-package git-timemachine
+  :ensure t
+  :after git-timemachine
+  :hook 
+  ;; Add hook for evil normalize keymaps in git timemachine mode
+  (evil-normalize-keymaps . git-timemachine-hook)
+  :config
+  ;; Define keys for showing previous and next revision in git timemachine mode
+  (evil-define-key 'normal git-timemachine-mode-map (kbd "C-j") 'git-timemachine-show-previous-revision)
+  (evil-define-key 'normal git-timemachine-mode-map (kbd "C-k") 'git-timemachine-show-next-revision))
+
+#+END_SRC
+
+** YASnippet Settings
+
+This Emacs Lisp script configures the yasnippet package, which is used for inserting template snippets in Emacs. The configuration ensures that the package is installed and enables yasnippet globally. It also sets a directory for storing user-defined snippets and reloads all snippets. Finally, it enables yasnippet minor mode automatically in all programming modes by adding it to the 'prog-mode-hook'.
+
+#+BEGIN_SRC emacs-lisp
+
+;; Use yasnippet package
+(use-package yasnippet
+  :ensure t
+  :init
+  ;; Enable global yasnippet mode
+  (yas-global-mode 1)
+  ;; Set directory for yasnippet snippets
+  (setq yas-snippet-dirs '("~/.emacs.d/snippets"))
+  ;; Reload all snippets
+  (yas-reload-all)
+  ;; Enable yasnippet minor mode in programming modes
+  (add-hook 'prog-mode-hook #'yas-minor-mode))
+
+#+END_SRC
+
+** Markdown Settings
+
+This Emacs Lisp code block is used to install and configure the markdown-mode package in Emacs. It sets up Emacs to automatically use GitHub Flavored Markdown mode (gfm-mode) when opening files with .markdown or .md extensions.
+
+#+BEGIN_SRC emacs-lisp
+
+;; Use markdown-mode package
+(use-package markdown-mode
+  :ensure t
+  :config
+  ;; Add .markdown and .md files to auto-mode-alist for gfm-mode (GitHub Flavored Markdown mode)
+  (add-to-list 'auto-mode-alist '("\\.markdown" . gfm-mode))
+  (add-to-list 'auto-mode-alist '("\\.md" . gfm-mode)))
+
+#+END_SRC
+
+** JSON Settings
+
+This Emacs Lisp code block is used to install and configure the json-mode package in Emacs. It ensures that any file with a .json extension will automatically open in json-mode.
+
+#+BEGIN_SRC emacs-lisp
+
+;; Use json-mode package
+(use-package json-mode
+  :ensure t
+  :config
+  ;; Add .json files to auto-mode-alist for json-mode
+  (add-to-list 'auto-mode-alist '("\\.json" . json-mode)))
+
+#+END_SRC
+
+** LaTeX Settings
+
+This Emacs Lisp code block serves to streamline the installation and configuration of several packages designed to enhance LaTeX editing within Emacs. First and foremost, 'auctex' is configured to improve LaTeX support by setting options, enabling useful modes like prettify symbols and flyspell, and integrating 'reftex.' Additionally, 'auto-complete-auctex' offers auto-completion features tailored for AUCTeX. 'cdlatex' is set up to provide efficient input methods for LaTeX environments and math, and 'pdf-tools' is configured as a comprehensive in-Emacs PDF viewer with lazy loading. Although 'latex-preview-pane' is included, its use is commented out, as it enables LaTeX file preview directly within Emacs and can be easily activated by uncommenting the relevant configuration lines. These configurations collectively optimize the LaTeX editing experience in Emacs.
+
+#+BEGIN_SRC emacs-lisp
+
+;; Use auctex package
+(use-package auctex
+  :ensure t
+  :hook 
+  ;; Enable prettify symbols mode and flyspell in LaTeX mode
+  (LaTeX-mode . turn-on-prettify-symbols-mode)
+  (LaTeX-mode . turn-on-flyspell)
+  :config
+  ;; Set various options for auctex
+  (setq TeX-auto-save t
+        TeX-parse-self t
+        TeX-save-query nil
+        TeX-master nil
+        TeX-engine 'pdflatex ; 'xetex, 'pdflatex, 'lualatex, etc., depending on your preference
+        TeX-PDF-mode t)
+  ;; Set newline function for auctex
+  (TeX-newline-function 'newline-and-indent)
+  ;; Add hook to enable reftex in LaTeX mode
+  (add-hook 'LaTeX-mode-hook 'turn-on-reftex))
+
+;; Use auto-complete-auctex package after auctex
+(use-package auto-complete-auctex
+  :ensure t
+  :after auctex)
+
+;; Use biblio package
+(use-package biblio
+  :ensure t)
+
+;; Use cdlatex package
+(use-package cdlatex
+  :ensure t
+  :config
+  ;; Enable cdlatex in LaTeX mode
+  (add-hook 'LaTeX-mode-hook #'turn-on-cdlatex))
+
+;; Use pdf-tools package
+(use-package pdf-tools
+  :ensure t
+  :defer t)
+
+;; Uncomment the following lines if you want to use latex-preview-pane package
+;;(use-package latex-preview-pane
+;;  :ensure t
+;;  :config
+;;  ;; Enable latex preview pane mode in LaTeX mode
+;;  (add-hook 'LaTeX-mode-hook #'latex-preview-pane-mode))
+
+#+END_SRC
+
+** Python Settings
+
+This Emacs Lisp code block is dedicated to installing and configuring several packages to enhance Python programming within the Emacs environment. It covers a range of functionalities, starting with 'python-mode,' which enhances Python language editing and includes configurations for 'lsp-deferred,' Python shell interpreter, and 'dap-python' options. 'ein' enables interaction with Jupyter notebooks in Emacs, with various options configured. 'python-pytest' facilitates pytest usage, confirming before running tests. 'py-isort' integrates the 'isort' tool for sorting imports, 'pyimport' adds/removes import statements, 'poetry' provides an interface to Poetry for dependency management, and 'pipenv' interfaces with Pipenv, setting up pipenv mode and project handling. 'elpy' is enabled as an Emacs Python Development Environment. Although 'pyenv' is commented out, it offers an interface to Pyenv for Python version management when uncommented. These configurations collectively optimize Python development in Emacs.
+
+We use =lsp-mode= and =dap-mode= to provide a complete development environment for Python in Emacs. Check out [[https://emacs-lsp.github.io/lsp-mode/page/lsp-pyls/][the =pyls= configuration]] in the =lsp-mode= documentation for more details.
+=pip3 install "python-language-server[all]"=
+
+#+BEGIN_SRC emacs-lisp
+
+;; Use python-mode package
+(use-package python-mode
+  :ensure t
+  :demand t
+  :hook 
+  ;; Enable lsp-deferred in python mode
+  (python-mode . lsp-deferred)
+  :custom
+  ;; Set python shell interpreter and dap-python options
+  (python-shell-interpreter "python3")
+  (dap-python-executable "python3")
+  (dap-python-debugger 'debugpy)
+  :config
+  ;; Require dap-python
+  (require 'dap-python))
+
+;; Use ein package
+(use-package ein
+  :ensure t
+  :config
+  ;; Set various options for ein
+  (setq ein:use-auto-complete t
+        ein:use-smartrep t
+        ein:jupyter-default-server-command "jupyter-notebook"))
+
+;; Use python-pytest package
+(use-package python-pytest
+  :ensure t
+  :custom 
+  ;; Confirm before running pytest
+  (python-pytest-confirm t))
+
+;; Use py-isort package
+(use-package py-isort
+  :ensure t)
+
+;; Use pyimport package
+(use-package pyimport
+  :ensure t)
+
+;; Uncomment the following lines if you want to use pyenv package
+;;(use-package pyenv
+;;  :ensure t
+;;  :elpaca (:host github :repo "shellbj/pyenv.el")
+;;  :config 
+;;  ;; Enable global pyenv mode
+;;  (global-pyenv-mode))
+
+;; Use poetry package
+(use-package poetry
+  :ensure t)
+
+;; Use pipenv package
+(use-package pipenv
+  :ensure t
+  :hook 
+  ;; Enable pipenv mode in python mode
+  (python-mode . pipenv-mode)
+  :init 
+  ;; Set pipenv projectile after switch function
+  (setq pipenv-projectile-after-switch-function #'pipenv-projectile-after-switch-extended))
+
+;; Use elpy package
+(use-package elpy
+  :ensure t
+  :init 
+  ;; Enable elpy
+  (elpy-enable))
+
+#+END_SRC
+
+** Typescript Settings
+
+This Emacs Lisp code block installs and configures the typescript-mode package in Emacs. It sets up Emacs to automatically use TypeScript mode for .ts files, enables on-demand loading of Language Server Protocol features, and sets the indentation level for TypeScript code to 4 spaces.
+
+For =lsp-mode= to work with TypeScript (and JavaScript) you will need to install a language server on your machine. If you have Node.js installed, the easiest way to do that is by running the following command:
+=npm install -g typescript-language-server= typescript
+
+#+BEGIN_SRC emacs-lisp
+
+;; Use typescript-mode package
+(use-package typescript-mode
+  :ensure t
+  :mode "\\.ts\\'"
+  :hook 
+  ;; Enable lsp-deferred in typescript mode
+  (typescript-mode . lsp-deferred)
+  :config
+  ;; Set indentation level for typescript
+  (setq typescript-indent-level 4))
+
+#+END_SRC
+
+** Verilog-Mode Settings
+
+
+This Emacs Lisp code block configures and ensures the installation of the 'verilog-mode' and 'verilog-ext' packages for improved support in Emacs when working with Verilog files. 'verilog-ext' is set up to work in conjunction with 'verilog-mode' and is configured with various features like syntax highlighting, cross-referencing, code completion, hierarchy navigation, language server support (using ve-svlangserver), linting with flycheck, code beautification, and more. Additionally, it defines the indexing function for imenu and specifies certain backend and frontend options for hierarchy and tags handling. Note that there's also a commented-out section for 'verilog-ts-mode' if you wish to use it. These configurations aim to enhance the Verilog development experience in Emacs.
+
+#+BEGIN_SRC emacs-lisp
+
+;; Use verilog-mode package
+(use-package verilog-mode
+  :ensure t)
+
+;; Use verilog-ext package after verilog-mode
+(use-package verilog-ext
+  :ensure t
+  :after verilog-mode
+  :demand
+  :hook 
+  ;; Enable verilog-ext mode in verilog mode
+  (verilog-mode . verilog-ext-mode)
+  :init
+  ;; Set features for verilog-ext
+  (setq verilog-ext-feature-list '( font-lock
+                                    xref
+                                    capf
+                                    hierarchy
+                                    eglot
+                                    lsp
+                                    flycheck
+                                    beautify
+                                    navigation
+                                    template
+                                    formatter
+                                    compilation
+                                    imenu
+                                    which-func
+                                    hideshow
+                                    typedefs
+                                    time-stamp
+                                    block-end-comments
+                                    company-keywords
+                                    ports))
+  :config
+  ;; Setup verilog-ext mode and set various options
+  (verilog-ext-mode-setup)
+  (verilog-ext-lsp-set-server 've-svlangserver)
+  (setq verilog-ext-hierarchy-backend 'builtin)
+  (setq verilog-ext-hierarchy-frontend 'hierarchy)
+  (setq verilog-ext-tags-backend 'tree-sitter)
+  (setq-local imenu-create-index-function #'verilog-ext-imenu-index))
+
+;; Uncomment the following lines if you want to use verilog-ts-mode package
+;;(use-package verilog-ts-mode
+;;	:mode (("\\.s?vh?\\'" . verilog-ts-mode)))
+
+#+END_SRC
+
+** Emacs Lisp Settings
+
+This Emacs Lisp code block sets up a hook for the 'emacs-lisp-mode,' which is used for editing Emacs Lisp code. When in 'emacs-lisp-mode,' the script enables 'eldoc-mode' to provide helpful documentation about functions and variables in the Emacs Lisp code you're writing. It also defines a key binding within 'emacs-lisp-mode'—pressing Ctrl-c Ctrl-c ('C-c C-c') triggers the 'byte-recompile-directory' function, which recompiles all .el files in the current directory. This setup enhances the development experience when working with Emacs Lisp code by providing real-time documentation assistance and a convenient key binding for recompilation.
+
+#+BEGIN_SRC emacs-lisp
+
+;; Add hook for emacs-lisp-mode
+(add-hook 'emacs-lisp-mode-hook 
+  (lambda ()
+    ;; Enable eldoc mode in emacs-lisp-mode
+    (eldoc-mode 1)
+    ;; Define key binding for byte-recompile-directory in emacs-lisp-mode
+    (define-key (current-local-map) "\C-c\C-c" 'byte-recompile-directory)))
+
+#+END_SRC
+
+** YAML Settings
+
+This block of code installs the *yaml-mode* package in Emacs, but defers its loading until it's needed. The *yaml-mode* package offers an environment for editing YAML files.
+
+#+BEGIN_SRC emacs-lisp
+
+;; Use yaml-mode package
+(use-package yaml-mode
+  :ensure t
+  :defer t)
+
+#+END_SRC
+
+** Scala Settings
+
+This block of code installs the *scala-mode* package in Emacs. The *scala-mode* package offers an environment for editing Scala files.
+
+#+BEGIN_SRC emacs-lisp
+
+;; Use scala-mode package
+(use-package scala-mode
+  :ensure t)
+
+#+END_SRC
+
+** ORG Settings
+
+This Emacs Lisp code block is dedicated to optimizing the functionality and appearance of Org Mode within Emacs. It begins by requiring 'org-tempo' for expanding Org templates and then sets up 'toc-org' and 'org-bullets' packages to enable a table of contents and improve bullet point presentation, respectively. Various hooks are added to 'org-mode' to enable 'org-indent-mode,' activate 'org-bullets-mode,' and customize the behavior of angle bracket auto-pairing. The code block also fine-tunes indentation, customizes todo keyword faces and emphasis markers, configures Org Babel languages, and customizes the appearance of different outline levels. It additionally includes 'org-ref' for reference management and 'org-alert' for alert notifications, though 'org-ref' is disabled due to slow loading. Collectively, these configurations enhance the usability and aesthetics of Org Mode for task management and document organization in Emacs.
+
+| Typing the below + TAB | Expands to                              |
+|------------------------+-----------------------------------------|
+| <a                     | '#+BEGIN_EXPORT ascii' … '#+END_EXPORT  |
+| <c                     | '#+BEGIN_CENTER' … '#+END_CENTER'       |
+| <C                     | '#+BEGIN_COMMENT' … '#+END_COMMENT'     |
+| <e                     | '#+BEGIN_EXAMPLE' … '#+END_EXAMPLE'     |
+| <E                     | '#+BEGIN_EXPORT' … '#+END_EXPORT'       |
+| <h                     | '#+BEGIN_EXPORT html' … '#+END_EXPORT'  |
+| <l                     | '#+BEGIN_EXPORT latex' … '#+END_EXPORT' |
+| <q                     | '#+BEGIN_QUOTE' … '#+END_QUOTE'         |
+| <s                     | '#+BEGIN_SRC' … '#+END_SRC'             |
+| <v                     | '#+BEGIN_VERSE' … '#+END_VERSE'         |
+
+#+BEGIN_SRC emacs-lisp
+
+;; Require org-tempo package
+(require 'org-tempo)
+
+;; Use toc-org package
+(use-package toc-org
+  :ensure t
+  :commands toc-org-enable
+  :init
+  ;; Enable toc-org in org mode
+  (add-hook 'org-mode-hook 'toc-org-enable))
+
+;; Use org-bullets package
+(use-package org-bullets
+  :ensure t)
+
+;; Add hooks for org mode
+(add-hook 'org-mode-hook 'org-indent-mode)
+(add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+(add-hook 'org-mode-hook (lambda () (org-indent-mode) (diminish 'org-indent-mode)))
+
+;; Set src block automatic indent to 2.
+(setq org-edit-src-content-indentation 2)
+
+;; Prevent <> from auto-pairing when electric-pair-mode is on.
+(add-hook 'org-mode-hook 
+          (lambda () 
+            (setq-local electric-pair-inhibit-predicate `(lambda (c) 
+                                                           (if (char-equal c ?<) t 
+                                                             (,electric-pair-inhibit-predicate c))))))
+
+;; Set faces for org todo keywords
+(setq org-todo-keyword-faces
+      '(("TODO" :foreground "red" :weight bold)
+        ("NEXT" :foreground "blue" :weight bold)
+        ("DONE" :foreground "forest green" :weight bold)
+        ("WAITING" :foreground "orange" :weight bold)
+        ("HOLD" :foreground "magenta" :weight bold)
+        ("CANCELLED" :foreground "forest green" :weight bold)
+        ("MEETING" :foreground "forest green" :weight bold)
+        ("PHONE" :foreground "forest green" :weight bold)))
+
+;; Set org export with todo keywords to nil
+(setq-default org-export-with-todo-keywords nil)
+
+;; Hide emphasis markers in org mode
+(setq org-hide-emphasis-markers t)
+
+;; Load languages for org babel after loading org
+(with-eval-after-load 'org
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . t)
+     (python . t)))
+  ;; Add conf-unix to org src lang modes
+  (push '("conf-unix" . conf-unix) org-src-lang-modes))
+
+;; Set faces for org levels
+(custom-set-faces
+ '(org-level-1 ((t (:inherit outline-1 :height 1.6))))
+ '(org-level-2 ((t (:inherit outline-2 :height 1.5))))
+ '(org-level-3 ((t (:inherit outline-3 :height 1.4))))
+ '(org-level-4 ((t (:inherit outline-4 :height 1.3))))
+ '(org-level-5 ((t (:inherit outline-5 :height 1.2))))
+ '(org-level-6 ((t (:inherit outline-5 :height 1.1))))
+ '(org-level-7 ((t (:inherit outline-5 :height 1.0)))))
+
+;; Use org-ref package
+(use-package org-ref
+  :ensure t
+  :disabled ;; very slow to load
+  :config
+  ;; Alias dnd-unescape-uri to dnd--unescape-uri
+  (defalias 'dnd-unescape-uri 'dnd--unescape-uri))
+
+;; Use org-alert package
+(use-package org-alert
+  :ensure t
+  :config
+  ;; Enable org alert
+  (org-alert-enable)
+  :custom
+  ;; Set default style for alerts
+  (alert-default-style 'osx-notifier))
+
+#+END_SRC
+
+* Miscellaneous Packages
+
+This Emacs Lisp code block configures several packages to enhance various aspects of the Emacs environment. It begins by enabling 'sudo-edit' for editing files with sudo privileges and 'tldr' for quick access to command documentation. 'smartparens' is configured globally to improve code pairing and navigation, while 'apheleia' enables automatic code formatting. 'csv-mode' is set up to guess and set separators for CSV files automatically. 'emojify' replaces text-based emojis with graphical representations in a global mode. 'format-all' facilitates code formatting in programming modes, 'adaptive-wrap' improves text wrapping, 'simple-httpd' enables local website hosting, and 'htmlize' adds source block highlighting when publishing a website. Together, these configurations enhance productivity, code editing, and documentation lookup in Emacs.
+
+#+BEGIN_SRC emacs-lisp
+
+;; Use sudo-edit package
+(use-package sudo-edit
+  :ensure t)
+
+;; Use tldr package
+(use-package tldr
+  :ensure t)
+
+;; Use smartparens package
+(use-package smartparens
+  :ensure t
+  :config
+  ;; Require smartparens-config and enable global mode
+  (require 'smartparens-config)
+  (smartparens-global-mode t))
+
+;; Use apheleia package
+(use-package apheleia
+  :ensure t
+  :config
+  ;; Enable apheleia global mode
+  (apheleia-global-mode +1))
+
+;; Use csv-mode package
+(use-package csv-mode
+  :ensure t
+  :config
+  ;; Add hook to set separator in csv mode
+  (add-hook 'csv-mode-hook 'csv-guess-set-separator))
+
+;; Use emojify package
+(use-package emojify
+  :ensure t
+  :hook 
+  ;; Enable global emojify mode after init
+  (after-init . global-emojify-mode))
+
+;; Use format-all package
+(use-package format-all
+  :ensure t
+  :config
+  ;; Enable format all mode in prog mode
+  (add-hook 'prog-mode-hook 'format-all-mode))
+
+;; Use adaptive-wrap package
+(use-package adaptive-wrap
+  :ensure t)
+
+;; Host your website on your local machine
+(use-package simple-httpd
+  :ensure t)
+
+;; Enable fontify of source blocks while publishing a website
+(use-package htmlize
+  :ensure t)
+
+#+END_SRC
+
+* List of all Keybindings
+
+| Keybinding      | Command                             | Defined With          |
+|-----------------+-------------------------------------+-----------------------|
+| SPC SPC         | counsel-M-x                         | general.el            |
+| SPC .           | find-file                           | general.el            |
+| SPC =           | perspective-map                     | general.el            |
+| SPC TAB TAB     | comment-line                        | general.el            |
+| SPC u           | universal-argument                  | general.el            |
+| SPC b b         | switch-to-buffer                    | general.el            |
+| SPC b c         | clone-indirect-buffer               | general.el            |
+| SPC b C         | clone-indirect-buffer-other-window  | general.el            |
+| SPC b d         | bookmark-delete                     | general.el            |
+| SPC b i         | ibuffer                             | general.el            |
+| SPC b k         | kill-current-buffer                 | general.el            |
+| SPC b K         | kill-some-buffers                   | general.el            |
+| SPC b l         | list-bookmarks                      | general.el            |
+| SPC b m         | bookmark-set                        | general.el            |
+| SPC b n         | next-buffer                         | general.el            |
+| SPC b p         | previous-buffer                     | general.el            |
+| SPC b r         | revert-buffer                       | general.el            |
+| SPC b R         | rename-buffer                       | general.el            |
+| SPC b s         | basic-save-buffer                   | general.el            |
+| SPC b S         | save-some-buffers                   | general.el            |
+| SPC b w         | bookmark-save                       | general.el            |
+| SPC d d         | dired                               | general.el            |
+| SPC d j         | dired-jump                          | general.el            |
+| SPC d n         | neotree-dir                         | general.el            |
+| SPC d p         | peep-dired                          | general.el            |
+| SPC e b         | eval-buffer                         | general.el            |
+| SPC e d         | eval-defun                          | general.el            |
+| SPC e e         | eval-expression                     | general.el            |
+| SPC e h         | counsel-esh-history                 | general.el            |
+| SPC e l         | eval-last-sexp                      | general.el            |
+| SPC e r         | eval-region                         | general.el            |
+| SPC e R         | eww-reload                          | general.el            |
+| SPC e s         | eshell                              | general.el            |
+| SPC e w         | eww                                 | general.el            |
+| SPC f c         | Open emacs_config.org               | general.el            |
+| SPC f e         | Open ~/.emacs.d/ in dired           | general.el            |
+| SPC f d         | find-grep-dired                     | general.el            |
+| SPC f g         | counsel-grep-or-swiper              | general.el            |
+| SPC f i         | Open init.el                        | general.el            |
+| SPC f j         | counsel-file-jump                   | general.el            |
+| SPC f l         | counsel-locate                      | general.el            |
+| SPC f r         | counsel-recentf                     | general.el            |
+| SPC f u         | sudo-edit-find-file                 | general.el            |
+| SPC f U         | sudo-edit                           | general.el            |
+| SPC g /         | magit-dispatch                      | general.el            |
+| SPC g .         | magit-file-dispatch                 | general.el            |
+| SPC g b         | magit-branch-checkout               | general.el            |
+| SPC g c b       | magit-branch-and-checkout           | general.el            |
+| SPC g c c       | magit-commit-create                 | general.el            |
+| SPC g c f       | magit-commit-fixup                  | general.el            |
+| SPC g C         | magit-clone                         | general.el            |
+| SPC g f c       | magit-show-commit                   | general.el            |
+| SPC g f f       | magit-find-file                     | general.el            |
+| SPC g f g       | magit-find-git-config-file          | general.el            |
+| SPC g F         | magit-fetch                         | general.el            |
+| SPC g g         | magit-status                        | general.el            |
+| SPC g i         | magit-init                          | general.el            |
+| SPC g l         | magit-log-buffer-file               | general.el            |
+| SPC g r         | vc-revert                           | general.el            |
+| SPC g s         | magit-stage-file                    | general.el            |
+| SPC g t         | git-timemachine                     | general.el            |
+| SPC g u         | magit-stage-file                    | general.el            |
+| SPC h a         | counsel-apropos                     | general.el            |
+| SPC h b         | describe-bindings                   | general.el            |
+| SPC h c         | describe-char                       | general.el            |
+| SPC h d a       | about-emacs                         | general.el            |
+| SPC h d d       | view-emacs-debugging                | general.el            |
+| SPC h d f       | view-emacs-FAQ                      | general.el            |
+| SPC h d m       | info-emacs-manual                   | general.el            |
+| SPC h d n       | view-emacs-news                     | general.el            |
+| SPC h d o       | describe-distribution               | general.el            |
+| SPC h d p       | view-emacs-problems                 | general.el            |
+| SPC h d t       | view-emacs-todo                     | general.el            |
+| SPC h d w       | describe-no-warranty                | general.el            |
+| SPC h e         | view-echo-area-messages             | general.el            |
+| SPC h f         | describe-function                   | general.el            |
+| SPC h F         | describe-face                       | general.el            |
+| SPC h g         | describe-gnu-project                | general.el            |
+| SPC h i         | info                                | general.el            |
+| SPC h I         | describe-input-method               | general.el            |
+| SPC h k         | describe-key                        | general.el            |
+| SPC h l         | view-lossage                        | general.el            |
+| SPC h L         | describe-language-environment       | general.el            |
+| SPC h m         | describe-mode                       | general.el            |
+| SPC h r r       | Reload emacs config                 | general.el            |
+| SPC h t         | load-theme                          | general.el            |
+| SPC h v         | describe-variable                   | general.el            |
+| SPC h w         | where-is                            | general.el            |
+| SPC h x         | describe-command                    | general.el            |
+| SPC m a         | org-agenda                          | general.el            |
+| SPC m e         | org-export-dispatch                 | general.el            |
+| SPC m i         | org-toggle-item                     | general.el            |
+| SPC m t         | org-todo                            | general.el            |
+| SPC m B         | org-babel-tangle                    | general.el            |
+| SPC m T         | org-todo-list                       | general.el            |
+| SPC n r f       | neotree-refresh                     | general.el            |
+| SPC n c e       | neotree-create-mode                 | general.el            |
+| SPC n d n       | neotree-delete-mode                 | general.el            |
+| SPC n r n       | neotree-rename-mode                 | general.el            |
+| SPC m b -       | org-table-insert-hline              | general.el            |
+| SPC m d t       | org-time-stamp                      | general.el            |
+| SPC o d         | dashboard-open                      | general.el            |
+| SPC o f         | make-frame                          | general.el            |
+| SPC o F         | select-frame-by-name                | general.el            |
+| SPC p           | projectile-command-map              | general.el            |
+| SPC s d         | dictionary-search                   | general.el            |
+| SPC s m         | man                                 | general.el            |
+| SPC s t         | tldr                                | general.el            |
+| SPC s w         | woman                               | general.el            |
+| SPC t e         | eshell-toggle                       | general.el            |  
+| SPC t f         | flycheck-mode                       | general.el            |
+| SPC t l         | display-line-numbers-mode           | general.el            |
+| SPC t n         | neotree-toggle                      | general.el            |
+| SPC t o         | org-mode                            | general.el            |
+| SPC t r         | rainbow-mode                        | general.el            |
+| SPC t t         | visual-line-mode                    | general.el            |
+| SPC t v         | vterm-toggle                        | general.el            |
+| SPC w c         | evil-window-delete                  | general.el            |  
+| SPC w n         | evil-window-new                     | general.el            |
+| SPC w s         | evil-window-split                   | general.el            |
+| SPC w v         | evil-window-vsplit                  | general.el            |
+| SPC w h         | evil-window-left                    | general.el            |
+| SPC w j         | evil-window-down                    | general.el            |
+| SPC w k         | evil-window-up                      | general.el            |
+| SPC w l         | evil-window-right                   | general.el            |
+| SPC w w         | evil-window-next                    | general.el            |   
+| SPC w H         | buf-move-left                       | general.el            |
+| SPC w J         | buf-move-down                       | general.el            |
+| SPC w K         | buf-move-up                         | general.el            |
+| SPC w L         | buf-move-right                      | general.el            |
+| C-S-a           | embark-act                          | :bind in embark       |
+| C-h B           | embark-bindings                     | :bind in embark       |
+| !               | consult-flycheck                    | flycheck-command-map  |
+| M-/             | evilnc-comment-or-uncomment-lines   | global-set-key        |
+
+* End of the Configuration File
+
+** Bottom Contents
+
+This line of code is a comment signifying the end of an Emacs configuration file, typically titled *emacs_config.el*. In Emacs Lisp, comments commence with a semicolon (;). The quantity of semicolons utilized can represent the level or significance of the comment. Here, three semicolons are employed to denote a section-level comment.
+
+#+BEGIN_SRC emacs-lisp
+  ;;; emacs_config.el ends here
+#+END_SRC

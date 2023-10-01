@@ -46,11 +46,12 @@
   "Download URL content and save it to DIR as FILENAME."
   (let* ((dir-path (expand-file-name dir))
          (file-path (concat (file-name-as-directory dir-path) filename)))
-    ;; If directory exists, delete it first.
-    (when (file-exists-p dir-path)
-      (delete-directory dir-path t))
-    ;; Create new directory.
-    (make-directory dir-path t)
+    ;; If file exists, delete it first.
+    (when (file-exists-p file-path)
+      (delete-file file-path))
+    ;; Create directory if it doesn't exist.
+    (unless (file-exists-p dir-path)
+      (make-directory dir-path t))
     ;; Download and save the file.
     (url-copy-file url file-path t)))
 
@@ -60,7 +61,9 @@
 "skeleton_files"
 "emacs_config.org")
 
-(copy-file "index.org" "skeleton_files/index.org" t)
+(if (file-exists-p "index.org")
+    (copy-file "index.org" "skeleton_files/index.org" t))
+
 
 ;; Load the publishing system
 (require 'ox-publish)
@@ -80,18 +83,14 @@
              :section-numbers nil       ;; Don't include section numbers
              :time-stamp-file nil)))    ;; Don't include time stamp in file
 
-;; Customize the HTML output
 (setq org-html-validation-link nil            ;; Don't show validation link
       org-html-head-include-scripts nil       ;; Use our own scripts
       org-html-head-include-default-style nil ;; Use our own styles
-      org-html-head "
-<link rel=\"stylesheet\" type=\"text/css\" href=\"https://fniessen.github.io/org-html-themes/src/readtheorg_theme/css/htmlize.css\"/>
-<link rel=\"stylesheet\" type=\"text/css\" href=\"https://fniessen.github.io/org-html-themes/src/readtheorg_theme/css/readtheorg.css\"/>
+      org-html-head "<link rel=\"stylesheet\" href=\"../skeleton_files/style.css\" />
+                     <link rel=\"stylesheet\" href=\"../skeleton_files/highlight/styles/atom-one-dark.min.css\" />
+                     <script src=\"../skeleton_files/highlight/highlight.min.js\"></script>
+                     <script>hljs.highlightAll();</script>")
 
-<script src=\"https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js\"></script>
-<script src=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js\"></script>
-<script type=\"text/javascript\" src=\"https://fniessen.github.io/org-html-themes/src/lib/js/jquery.stickytableheaders.min.js\"></script>
-<script type=\"text/javascript\" src=\"https://fniessen.github.io/org-html-themes/src/readtheorg_theme/js/readtheorg.js\"></script>")
 
 ;; Generate the site output
 (org-publish-all t)

@@ -57,17 +57,18 @@
 
 ;; Download and save the latest emacs_config.org file from - https://github.com/achakraborty2591/ACH-Emacs-Config repo.
 (my/download-and-save-file
-"https://raw.githubusercontent.com/achakraborty2591/ACH-Emacs-Config/master/emacs_config.org"
+"https://raw.githack.com/achakraborty2591/ACH-Emacs-Config/master/emacs_config.org"
 "skeleton_files"
 "emacs_config.org")
-
-(if (file-exists-p "index.org")
-    (copy-file "index.org" "skeleton_files/index.org" t))
-
 
 ;; Load the publishing system
 (require 'ox-publish)
 
+;; Customize the HTML output
+(setq org-html-validation-link nil            ;; Don't show validation link
+      org-html-head-include-scripts nil       ;; Use our own scripts
+      org-html-head-include-default-style nil ;; Use our own styles
+      org-html-head "<link rel=\"stylesheet\" href=\"https://raw.githack.com/achakraborty2591/emacs-config-website/main/skeleton_files/style.css\" />")
 
 ;; Define the publishing project
 (setq org-publish-project-alist
@@ -82,11 +83,6 @@
              :with-toc t                ;; Include a table of contents
              :section-numbers nil       ;; Don't include section numbers
              :time-stamp-file nil)))    ;; Don't include time stamp in file
-
-(setq org-html-validation-link nil            ;; Don't show validation link
-      org-html-head-include-scripts nil       ;; Use our own scripts
-      org-html-head-include-default-style nil ;; Use our own styles
-      org-html-head "<link rel=\"stylesheet\" href=\"https://raw.githubusercontent.com/achakraborty2591/emacs-config-website/main/skeleton_files/style.css\" />")
 
 ;; Generate the site output
 (org-publish-all t)
